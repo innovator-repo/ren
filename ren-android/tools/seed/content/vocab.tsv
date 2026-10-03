@@ -1,0 +1,231 @@
+# text | reading | meaning | example (ruby markup) | example in English
+# Words with kanji join the lesson unit of their last-taught kanji (first 3 per unit);
+# the rest, and kana-only words, can be added from the Reader. Pitch accents come from Kanjium.
+日|ひ|sun, day|{日|ひ}が のぼります。|The sun comes up.
+月|つき|moon|{月|つき}が きれいです。|The moon is beautiful.
+木|き|tree|{大きい|おおきい|大きい} {木|き}です。|It is a big tree.
+火|ひ|fire|{火|ひ}に きを つけて。|Be careful with fire.
+水|みず|water|{水|みず}を ください。|Water, please.
+土|つち|soil, earth|{土|つち}が やわらかいです。|The soil is soft.
+お金|おかね|money|{お金|おかね}が ありません。|I have no money.
+金曜日|きんようび|Friday|{金曜日|きんようび}は いそがしいです。|Friday is busy.
+一つ|ひとつ|one (thing)|りんごを {一つ|ひとつ} ください。|One apple, please.
+二つ|ふたつ|two (things)|{二つ|ふたつ} ください。|Two, please.
+三つ|みっつ|three (things)|たまごが {三つ|みっつ} あります。|There are three eggs.
+人|ひと|person|あの {人|ひと}は だれですか。|Who is that person?
+一人|ひとり|one person, alone|{一人|ひとり}で いきます。|I'll go alone.
+二人|ふたり|two people|{二人|ふたり}で たべます。|The two of us will eat.
+口|くち|mouth|{口|くち}を あけて ください。|Please open your mouth.
+人口|じんこう|population|{人口|じんこう}が おおいです。|The population is large.
+山|やま|mountain|{山|やま}に のぼります。|I climb the mountain.
+火山|かざん|volcano|あれは {火山|かざん}です。|That is a volcano.
+川|かわ|river|{川|かわ}で あそびます。|We play in the river.
+田んぼ|たんぼ|rice paddy|{田んぼ|たんぼ}が ひろいです。|The rice paddies are wide.
+子ども|こども|child|{子ども|こども}が あそんで います。|Children are playing.
+女の子|おんなのこ|girl|{女の子|おんなのこ}が わらって います。|A girl is laughing.
+女の人|おんなのひと|woman|{女の人|おんなのひと}が きました。|A woman came.
+大きい|おおきい|big|{大きい|おおきい} {山|やま}です。|It is a big mountain.
+大人|おとな|adult|{大人|おとな} {一人|ひとり} です。|One adult.
+小さい|ちいさい|small|{小さい|ちいさい} {川|かわ}です。|It is a small river.
+中|なか|inside|かばんの {中|なか}に あります。|It is inside the bag.
+上|うえ|above, on top|つくえの {上|うえ}に あります。|It is on the desk.
+下|した|below, under|いすの {下|した}に います。|It is under the chair.
+十|じゅう|ten|{十|じゅう}まで かぞえます。|I count to ten.
+八つ|やっつ|eight (things)|あめを {八つ|やっつ} かいます。|I buy eight candies.
+四つ|よっつ|four (things)|いすが {四つ|よっつ} あります。|There are four chairs.
+五つ|いつつ|five (things)|みかんが {五つ|いつつ} あります。|There are five oranges.
+六つ|むっつ|six (things)|コップが {六つ|むっつ} あります。|There are six cups.
+七つ|ななつ|seven (things)|{七つ|ななつ}の いろが あります。|There are seven colors.
+九つ|ここのつ|nine (things)|ボールが {九つ|ここのつ} あります。|There are nine balls.
+三百|さんびゃく|three hundred|{三百|さんびゃく}{円|えん}です。|It's three hundred yen.
+百|ひゃく|hundred|{百|ひゃく}{人|にん}が きました。|A hundred people came.
+千|せん|thousand|{千|せん}{円|えん}です。|It's a thousand yen.
+一万|いちまん|ten thousand|{一万|いちまん}{円|えん}です。|It's ten thousand yen.
+円|えん|yen|{百|ひゃく}{円|えん}です。|It's a hundred yen.
+百円|ひゃくえん|100 yen|これは {百円|ひゃくえん}です。|This is 100 yen.
+千円|せんえん|1,000 yen|{千円|せんえん}で かえます。|You can buy it for 1,000 yen.
+目|め|eye|{目|め}が いたいです。|My eyes hurt.
+耳|みみ|ear|{耳|みみ}が いいです。|I have good ears.
+手|て|hand|{手|て}を あげて ください。|Please raise your hand.
+上手|じょうず|skilled, good at|うたが {上手|じょうず}です。|You are good at singing.
+下手|へた|unskilled, bad at|えが {下手|へた}です。|I am bad at drawing.
+足|あし|foot, leg|{足|あし}が いたいです。|My leg hurts.
+本|ほん|book|この {本|ほん}は おもしろいです。|This book is interesting.
+日本|にほん|Japan|{日本|にほん}に いきたいです。|I want to go to Japan.
+日本人|にほんじん|Japanese person|かれは {日本人|にほんじん}です。|He is Japanese.
+休日|きゅうじつ|day off, holiday|{日曜日|にちようび}は {休日|きゅうじつ}です。|Sunday is a day off.
+休む|やすむ|to rest|すこし {休みましょう|やすみましょう|休む}。|Let's rest a little.
+好き|すき|to like|{日本|にほん}が {好き|すき}です。|I like Japan.
+大好き|だいすき|to love|{本|ほん}が {大好き|だいすき}です。|I love books.
+明るい|あかるい|bright|へやが {明るい|あかるい}です。|The room is bright.
+明日|あした|tomorrow|{明日|あした}は {休日|きゅうじつ}です。|Tomorrow is a day off.
+林|はやし|woods|{林|はやし}の {中|なか}を あるきます。|I walk through the woods.
+森|もり|forest|{森|もり}は しずかです。|The forest is quiet.
+体|からだ|body|{体|からだ}に いいです。|It is good for your body.
+男の人|おとこのひと|man|{男の人|おとこのひと}が います。|There is a man.
+男の子|おとこのこ|boy|{男の子|おとこのこ}が はしって います。|A boy is running.
+父|ちち|(my) father|{父|ちち}は げんきです。|My father is well.
+お父さん|おとうさん|father|{お父さん|おとうさん}は どこですか。|Where is your father?
+母|はは|(my) mother|{母|はは}は りょうりが {上手|じょうず}です。|My mother is good at cooking.
+お母さん|おかあさん|mother|{お母さん|おかあさん}、ただいま。|Mom, I'm home.
+友だち|ともだち|friend|{友だち|ともだち}と あそびます。|I play with a friend.
+左|ひだり|left|{左|ひだり}に まがって ください。|Please turn left.
+右|みぎ|right|{右|みぎ}を みて ください。|Please look to the right.
+今|いま|now|{今|いま} いきます。|I'm going now.
+今日|きょう|today|{今日|きょう}は {休日|きゅうじつ}です。|Today is a day off.
+今月|こんげつ|this month|{今月|こんげつ}は いそがしいです。|This month is busy.
+何|なに|what|{何|なに}を たべますか。|What will you eat?
+何人|なんにん|how many people|{何人|なんにん} いますか。|How many people are there?
+今年|ことし|this year|{今年|ことし}は {日本|にほん}に いきます。|I'm going to Japan this year.
+年|とし|year, age|いい {年|とし}を。|Have a good year.
+何時|なんじ|what time|{今|いま} {何時|なんじ}ですか。|What time is it now?
+一時|いちじ|one o'clock|{一時|いちじ}に あいましょう。|Let's meet at one o'clock.
+時間|じかん|time|{時間|じかん}が ありません。|I have no time.
+人間|にんげん|human being|{人間|にんげん}は おもしろいです。|Humans are interesting.
+五分|ごふん|five minutes|{五分|ごふん} まって ください。|Please wait five minutes.
+半分|はんぶん|half|{半分|はんぶん} ください。|Half, please.
+一時半|いちじはん|half past one|{一時半|いちじはん}に いきます。|I'll go at half past one.
+前|まえ|front, before|{本|ほん}の {前|まえ}に すわります。|I sit in front.
+午前|ごぜん|a.m., morning|{午前|ごぜん} {一時|いちじ}です。|It's one a.m.
+名前|なまえ|name|お{名前|なまえ}は？|What's your name?
+後|あと|after, later|{後|あと}で でんわします。|I'll call later.
+午後|ごご|p.m., afternoon|{午後|ごご}は {休み|やすみ|休み}です。|The afternoon is off.
+毎日|まいにち|every day|{毎日|まいにち} {本|ほん}を よみます。|I read a book every day.
+毎年|まいとし|every year|{毎年|まいとし} {山|やま}に いきます。|I go to the mountains every year.
+毎月|まいつき|every month|{毎月|まいつき} {休み|やすみ|休み}が あります。|There's a day off every month.
+今週|こんしゅう|this week|{今週|こんしゅう}は いそがしいです。|This week is busy.
+毎週|まいしゅう|every week|{毎週|まいしゅう} {友だち|ともだち}に あいます。|I see a friend every week.
+日曜日|にちようび|Sunday|{日曜日|にちようび}は {休日|きゅうじつ}です。|Sunday is a day off.
+月曜日|げつようび|Monday|{月曜日|げつようび}は いそがしいです。|Monday is busy.
+何曜日|なんようび|what day of the week|{今日|きょう}は {何曜日|なんようび}ですか。|What day is it today?
+一年生|いちねんせい|first-year student|{子ども|こども}は {一年生|いちねんせい}です。|My child is in first grade.
+先生|せんせい|teacher|{先生|せんせい}、おはようございます。|Good morning, teacher.
+先月|せんげつ|last month|{先月|せんげつ} {日本|にほん}に いきました。|I went to Japan last month.
+先週|せんしゅう|last week|{先週|せんしゅう}は {休み|やすみ|休み}でした。|Last week was a break.
+大学|だいがく|university|{大学|だいがく}で べんきょうします。|I study at university.
+学生|がくせい|student|わたしは {学生|がくせい}です。|I am a student.
+学校|がっこう|school|{学校|がっこう}に いきます。|I go to school.
+白い|しろい|white|{白い|しろい} ねこです。|It's a white cat.
+天気|てんき|weather|{今日|きょう}は いい {天気|てんき}です。|The weather is nice today.
+人気|にんき|popular|この みせは {人気|にんき}が あります。|This shop is popular.
+雨|あめ|rain|{雨|あめ}が すきです。|I like rain.
+大雨|おおあめ|heavy rain|{今日|きょう}は {大雨|おおあめ}です。|There's heavy rain today.
+電気|でんき|electricity, light|{電気|でんき}を けして ください。|Please turn off the light.
+車|くるま|car|{車|くるま}で いきます。|I'll go by car.
+電車|でんしゃ|train|{電車|でんしゃ}で いきます。|I'll go by train.
+東|ひがし|east|{日|ひ}は {東|ひがし}から のぼります。|The sun rises in the east.
+西|にし|west|{西|にし}の そらが あかいです。|The western sky is red.
+南|みなみ|south|{南|みなみ}は あたたかいです。|The south is warm.
+北|きた|north|{北|きた}は さむいです。|The north is cold.
+国|くに|country|どこの {国|くに}ですか。|Which country?
+中国|ちゅうごく|China|{中国|ちゅうごく}は {大きい|おおきい}です。|China is big.
+外|そと|outside|{外|そと}で あそびます。|I play outside.
+外国|がいこく|foreign country|{外国|がいこく}に いきたいです。|I want to go abroad.
+外国人|がいこくじん|foreigner|{外国人|がいこくじん}が おおいです。|There are many foreigners.
+店|みせ|shop, store|この {店|みせ}は やすいです。|This shop is cheap.
+駅|えき|station|{駅|えき}は どこですか。|Where is the station?
+道|みち|road, way|この {道|みち}を いきます。|I'll take this road.
+会社|かいしゃ|company, office|{会社|かいしゃ}に いきます。|I go to the office.
+社長|しゃちょう|company president|{社長|しゃちょう}は いそがしいです。|The president is busy.
+行く|いく|to go|{学校|がっこう}に {行きます|いきます|行く}。|I go to school.
+来る|くる|to come|{友だち|ともだち}が {来ます|きます|来る}。|A friend is coming.
+来年|らいねん|next year|{来年|らいねん} {日本|にほん}に {行きます|いきます|行く}。|I'll go to Japan next year.
+来週|らいしゅう|next week|{来週|らいしゅう}は {休み|やすみ|休み}です。|Next week is a break.
+見る|みる|to see, to watch|テレビを {見ます|みます|見る}。|I watch TV.
+聞く|きく|to listen, to ask|おんがくを {聞きます|ききます|聞く}。|I listen to music.
+言う|いう|to say|{何|なに}を {言いました|いいました|言う}か。|What did you say?
+話す|はなす|to speak|{日本|にほん}ごを {話します|はなします|話す}。|I speak Japanese.
+電話|でんわ|telephone|{電話|でんわ}を かけます。|I make a phone call.
+日本語|にほんご|Japanese (language)|{日本語|にほんご}を べんきょうします。|I study Japanese.
+中国語|ちゅうごくご|Chinese (language)|{中国語|ちゅうごくご}も {話します|はなします|話す}。|I speak Chinese too.
+読む|よむ|to read|{本|ほん}を {読みます|よみます|読む}。|I read a book.
+書く|かく|to write|{名前|なまえ}を {書いて|かいて|書く} ください。|Please write your name.
+食べる|たべる|to eat|パンを {食べます|たべます|食べる}。|I eat bread.
+飲む|のむ|to drink|{水|みず}を {飲みます|のみます|飲む}。|I drink water.
+買う|かう|to buy|{本|ほん}を {買います|かいます|買う}。|I buy a book.
+入る|はいる|to enter|{店|みせ}に {入ります|はいります|入る}。|I enter the shop.
+入口|いりぐち|entrance|{入口|いりぐち}は {右|みぎ}です。|The entrance is on the right.
+出る|でる|to leave, to exit|{家|いえ}を {出ます|でます|出る}。|I leave the house.
+出口|でぐち|exit|{出口|でぐち}は どこですか。|Where is the exit?
+立つ|たつ|to stand|{立って|たって|立つ} ください。|Please stand up.
+高い|たかい|tall, expensive|この {本|ほん}は {高い|たかい}です。|This book is expensive.
+高校|こうこう|high school|{高校|こうこう}の {先生|せんせい}です。|I'm a high-school teacher.
+長い|ながい|long|{長い|ながい} {道|みち}です。|It's a long road.
+新しい|あたらしい|new|{新しい|あたらしい} {車|くるま}です。|It's a new car.
+新聞|しんぶん|newspaper|{毎日|まいにち} {新聞|しんぶん}を {読みます|よみます|読む}。|I read the newspaper every day.
+古い|ふるい|old (things)|{古い|ふるい} {本|ほん}です。|It's an old book.
+安い|やすい|cheap|この {店|みせ}は {安い|やすい}です。|This shop is cheap.
+多い|おおい|many, a lot|{人|ひと}が {多い|おおい}です。|There are a lot of people.
+少し|すこし|a little|{少し|すこし} ください。|Just a little, please.
+少ない|すくない|few|{時間|じかん}が {少ない|すくない}です。|There is little time.
+早い|はやい|early|{今日|きょう}は {早い|はやい}ですね。|You're early today.
+花|はな|flower|{花|はな}が きれいです。|The flowers are beautiful.
+花見|はなみ|cherry-blossom viewing|{友だち|ともだち}と {花見|はなみ}に {行きます|いきます|行く}。|I'm going to see the blossoms with friends.
+空|そら|sky|{空|そら}が あおいです。|The sky is blue.
+魚|さかな|fish|{魚|さかな}を {食べます|たべます|食べる}。|I eat fish.
+会う|あう|to meet|{友だち|ともだち}に {会います|あいます|会う}。|I meet a friend.
+休み|やすみ|break, day off|{明日|あした}は {休み|やすみ}です。|Tomorrow is a day off.
+住む|すむ|to live (somewhere)|{東|ひがし}の {町|まち}に {住んで|すんで|住む} います。|I live in a town in the east.
+作る|つくる|to make|ケーキを {作ります|つくります|作る}。|I make a cake.
+使う|つかう|to use|はしを {使います|つかいます|使う}。|I use chopsticks.
+持つ|もつ|to hold, to have|かさを {持って|もって|持つ} います。|I have an umbrella.
+気持ち|きもち|feeling|いい {気持ち|きもち}です。|It feels good.
+待つ|まつ|to wait|{駅|えき}で {待ちます|まちます|待つ}。|I wait at the station.
+家|いえ|house, home|{家|いえ}に {帰ります|かえります|帰る}。|I go home.
+町|まち|town|{小さい|ちいさい} {町|まち}です。|It's a small town.
+村|むら|village|{山|やま}の {村|むら}です。|It's a mountain village.
+歩く|あるく|to walk|{駅|えき}まで {歩きます|あるきます|歩く}。|I walk to the station.
+走る|はしる|to run|{毎朝|まいあさ} {走ります|はしります|走る}。|I run every morning.
+朝|あさ|morning|{朝|あさ}は {早い|はやい}です。|Mornings are early.
+毎朝|まいあさ|every morning|{毎朝|まいあさ} {電車|でんしゃ}に {乗ります|のります|乗る}。|I board the train every morning.
+朝ごはん|あさごはん|breakfast|{朝ごはん|あさごはん}を {食べます|たべます|食べる}。|I eat breakfast.
+夜|よる|night|{夜|よる}は しずかです。|Nights are quiet.
+今夜|こんや|tonight|{今夜|こんや} {会いましょう|あいましょう|会う}。|Let's meet tonight.
+昼|ひる|noon, daytime|{昼|ひる}に {食べます|たべます|食べる}。|I eat at noon.
+昼休み|ひるやすみ|lunch break|{昼休み|ひるやすみ}は {一時|いちじ}までです。|Lunch break is until one.
+夕日|ゆうひ|setting sun|{夕日|ゆうひ}が きれいです。|The sunset is beautiful.
+犬|いぬ|dog|{犬|いぬ}が {好き|すき}です。|I like dogs.
+お茶|おちゃ|tea|{お茶|おちゃ}を {飲みます|のみます|飲む}。|I drink tea.
+肉|にく|meat|{肉|にく}を {食べます|たべます|食べる}。|I eat meat.
+色|いろ|color|{好き|すき}な {色|いろ}は {何|なん}ですか。|What's your favorite color?
+赤い|あかい|red|{赤い|あかい} {花|はな}です。|It's a red flower.
+青い|あおい|blue|{青い|あおい} {空|そら}です。|It's a blue sky.
+近い|ちかい|near|{駅|えき}は {近い|ちかい}です。|The station is near.
+近く|ちかく|nearby|{家|いえ}の {近く|ちかく}に {店|みせ}が あります。|There's a shop near my house.
+遠い|とおい|far|{学校|がっこう}は {遠い|とおい}です。|School is far.
+乗る|のる|to ride, to board|バスに {乗ります|のります|乗る}。|I ride the bus.
+降る|ふる|to fall (rain, snow)|{雨|あめ}が {降って|ふって|降る} います。|It's raining.
+降りる|おりる|to get off|{駅|えき}で {降ります|おります|降りる}。|I get off at the station.
+帰る|かえる|to go home, to return|{家|いえ}に {帰ります|かえります|帰る}。|I go home.
+洗う|あらう|to wash|{手|て}を {洗います|あらいます|洗う}。|I wash my hands.
+料金|りょうきん|fee, fare|{料金|りょうきん}は {千円|せんえん}です。|The fee is 1,000 yen.
+写真|しゃしん|photo|{写真|しゃしん}を {見ます|みます|見る}。|I look at photos.
+真ん中|まんなか|right in the middle|{真ん中|まんなか}に {立ちます|たちます|立つ}。|I stand right in the middle.
+音|おと|sound|いい {音|おと}です。|It's a nice sound.
+音楽|おんがく|music|{音楽|おんがく}を {聞きます|ききます|聞く}。|I listen to music.
+楽しい|たのしい|fun|{日本語|にほんご}は {楽しい|たのしい}です。|Japanese is fun.
+紙|かみ|paper|{紙|かみ}に {書きます|かきます|書く}。|I write on paper.
+手紙|てがみ|letter|{母|はは}に {手紙|てがみ}を {書きます|かきます|書く}。|I write a letter to my mother.
+コーヒー|コーヒー|coffee|{コーヒー}を {飲みます|のみます|飲む}。|I drink coffee.
+パン|パン|bread|{朝|あさ}は {パン}を {食べます|たべます|食べる}。|I eat bread in the morning.
+ホテル|ホテル|hotel|{ホテル}は {駅|えき}の {前|まえ}です。|The hotel is in front of the station.
+おにぎり|おにぎり|rice ball|{おにぎり}を {二つ|ふたつ} {買います|かいます|買う}。|I buy two rice balls.
+コンビニ|コンビニ|convenience store|{コンビニ}は {近い|ちかい}です。|The convenience store is near.
+レジ|レジ|cash register|{レジ}は あちらです。|The register is over there.
+カード|カード|card|{カード}で いいですか。|Is a card okay?
+ラーメン|ラーメン|ramen|{ラーメン}が {好き|すき}です。|I like ramen.
+メニュー|メニュー|menu|{メニュー}を ください。|The menu, please.
+ケーキ|ケーキ|cake|{ケーキ}を {作ります|つくります|作る}。|I make a cake.
+トイレ|トイレ|toilet, restroom|{トイレ}は どこですか。|Where is the restroom?
+ビール|ビール|beer|{ビール}は {高い|たかい}です。|Beer is expensive.
+おいしい|おいしい|tasty, delicious|この {パン}は {おいしい}です。|This bread is delicious.
+ください|ください|please give me|{水|みず}を {ください}。|Water, please.
+おねがいします|おねがいします|please (request)|{カード}で {おねがいします}。|By card, please.
+とても|とても|very|{とても} {おいしい}です。|It's very tasty.
+ごちそうさま|ごちそうさま|thanks for the meal|{ごちそうさま}でした。|Thank you for the meal.
+すみません|すみません|excuse me, sorry|{すみません}、{駅|えき}は どこですか。|Excuse me, where is the station?
+どこ|どこ|where|{トイレ}は {どこ}ですか。|Where is the restroom?
+ありがとう|ありがとう|thank you|{ありがとう}ございます。|Thank you very much.
+いらっしゃいませ|いらっしゃいませ|welcome (in shops)|{いらっしゃいませ}。|Welcome.
+よろしく|よろしく|nice to meet you, please treat me well|{よろしく} {おねがいします}。|Pleased to meet you.
+はじめまして|はじめまして|nice to meet you (first time)|{はじめまして}、ゆきです。|Nice to meet you, I'm Yuki.

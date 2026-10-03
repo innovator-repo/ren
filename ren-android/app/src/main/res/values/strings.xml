@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ren</string>
+    <string name="widget_label">Ren reviews</string>
+    <string name="widget_description">Due reviews, retention and your streak.</string>
+    <string name="channel_reminders">Daily reminder</string>
+    <string name="channel_reminders_desc">One gentle nudge a day when reviews are waiting.</string>
+</resources>

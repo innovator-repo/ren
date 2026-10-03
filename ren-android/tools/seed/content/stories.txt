@@ -1,0 +1,73 @@
+# Stories: "== id | category | title (markup) | English title | icon | tint" then "jp markup || English" per line.
+# Every {word} must resolve to a vocab entry. Tints: amber, akane, radical, bamboo, ink.
+
+== hajimemashite | DIALOGUE | {はじめまして} | First hello | 話 | bamboo
+{はじめまして}。 || Nice to meet you.
+わたしは ゆきです。 || I'm Yuki.
+{コーヒー}と {パン}が すきです。 || I like coffee and bread.
+{よろしく} {おねがいします}。 || Pleased to meet you.
+
+== konbini | STORY | {コンビニ}で | At the convenience store | 店 | amber
+{今日|きょう}は {休日|きゅうじつ}です。 || Today is a day off.
+ゆきは {店|みせ}に {行きます|いきます|行く}。 || Yuki goes to the store.
+{おにぎり}を {買います|かいます|買う}。 || She buys a rice ball.
+{水|みず}も {買います|かいます|買う}。 || She buys water too.
+{レジ}で 「{カード}で {おねがいします}」と {言います|いいます|言う}。 || At the register she says, "By card, please."
+{店|みせ}を {出て|でて|出る}、{おにぎり}を {食べます|たべます|食べる}。 || She leaves the store and eats the rice ball.
+{とても} {おいしい}です。 || It's very tasty.
+
+== ramen | STORY | {ラーメン}を {食べる|たべる} | Ordering ramen | 食 | akane
+{友だち|ともだち}と {ラーメン}を {食べ|たべ|食べる}に {行きます|いきます|行く}。 || I go to eat ramen with a friend.
+{店|みせ}の {前|まえ}に {人|ひと}が {多い|おおい}です。 || There are a lot of people in front of the shop.
+{メニュー}を {見ます|みます|見る}。 || We look at the menu.
+「{ラーメン}を {二つ|ふたつ} {ください}」 || "Two ramen, please."
+{ラーメン}は {大きい|おおきい}です。 || The ramen is big.
+{とても} {おいしい}です。 || It's very tasty.
+{ごちそうさま}でした。 || Thank you for the meal.
+
+== eki | STORY | {駅|えき}で | At the metro station | 駅 | radical
+わたしは {駅|えき}へ {行きます|いきます|行く}。 || I go to the station.
+{毎朝|まいあさ} {電車|でんしゃ}に {乗ります|のります|乗る}。 || I board the train every morning.
+{会社|かいしゃ}は {駅|えき}の {近く|ちかく}です。 || The office is near the station.
+{電車|でんしゃ}は {人|ひと}が {多い|おおい}です。 || The train is crowded.
+{電車|でんしゃ}で {本|ほん}を {読みます|よみます|読む}。 || I read a book on the train.
+
+== michi | DIALOGUE | {道|みち}を {聞く|きく} | Asking the way | 道 | bamboo
+A：{すみません}、{駅|えき}は {どこ}ですか。 || A: Excuse me, where is the station?
+B：この {道|みち}を {右|みぎ}です。 || B: Go right on this road.
+A：{右|みぎ}ですね。 || A: Right, got it.
+B：はい、{五分|ごふん}です。 || B: Yes, it's five minutes.
+A：{ありがとう}ございます。 || A: Thank you very much.
+
+== kissaten | DIALOGUE | {店|みせ}で | At the cafe | 茶 | amber
+{いらっしゃいませ}。 || Welcome.
+{コーヒー}を {一つ|ひとつ} {ください}。 || One coffee, please.
+{ケーキ}も ありますか。 || Do you have cake too?
+はい。{三百|さんびゃく}{円|えん}です。 || Yes. That's 300 yen.
+{ありがとう}。 || Thank you.
+
+== signs | REAL_LIFE | {駅|えき}の {中|なか} | Signs in the station | 口 | radical
+{入口|いりぐち} || Entrance
+{出口|でぐち} || Exit
+{トイレ}は {右|みぎ}です。 || The restroom is on the right.
+{電車|でんしゃ}は {午後|ごご} {一時半|いちじはん}です。 || The train is at 1:30 p.m.
+
+== menu | REAL_LIFE | {メニュー} | Reading a menu | 円 | akane
+{ラーメン}　800{円|えん} || Ramen, 800 yen
+{おにぎり}　150{円|えん} || Rice ball, 150 yen
+{ビール}は {高い|たかい}です。 || Beer is expensive.
+{水|みず}は 0{円|えん}です。 || Water is free.
+
+== tomodachi | STORY | {友だち|ともだち}の {家|いえ} | A friend's house | 友 | ink
+{日曜日|にちようび}に {友だち|ともだち}の {家|いえ}に {行きます|いきます|行く}。 || On Sunday I go to my friend's house.
+{家|いえ}は {山|やま}の {近く|ちかく}です。 || The house is near the mountains.
+{お茶|おちゃ}を {飲みます|のみます|飲む}。 || We drink tea.
+{犬|いぬ}も います。 || There's a dog too.
+{夜|よる}、{家|いえ}に {帰ります|かえります|帰る}。 || At night I go home.
+
+== ame | STORY | {雨|あめ}の {日|ひ} | A rainy day | 雨 | radical
+{今日|きょう}は {雨|あめ}が {降って|ふって|降る} います。 || It's raining today.
+{外|そと}に {出ません|でません|出る}。 || I don't go outside.
+{家|いえ}で {音楽|おんがく}を {聞きます|ききます|聞く}。 || I listen to music at home.
+{本|ほん}も {読みます|よみます|読む}。 || I read a book too.
+{雨|あめ}の {日|ひ}は {楽しい|たのしい}です。 || Rainy days are fun.

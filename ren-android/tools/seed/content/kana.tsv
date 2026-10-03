@@ -1,0 +1,96 @@
+# character | romaji | mnemonic | example word | example meaning
+# Hiragana come first in groups of five, then Katakana anchored to real loanwords (spec §4).
+@hiragana
+あ|a|Ah! A ribbon tied in a loop around a stick.|あめ|rain
+い|i|Two reeds standing side by side, like two letter i's.|いぬ|dog
+う|u|A face going "oo" under a little hat.|うみ|sea
+え|e|An exotic bird with a crest, asking "eh?"|えき|station
+お|o|A golfer swinging: oh, a hole in one!|おかし|sweets
+か|ka|A karate chop with a bead of sweat flying off.|かさ|umbrella
+き|ki|A key with two teeth.|きのこ|mushroom
+く|ku|A cuckoo's beak opening wide.|くつ|shoes
+け|ke|A keg on its side next to its tap.|けむり|smoke
+こ|ko|Two koi swimming in parallel.|こえ|voice
+さ|sa|A signpost leaning over, saying stop.|さかな|fish
+し|shi|A fishhook she uses to catch fish.|しお|salt
+す|su|A swing with a loop in its rope.|すし|sushi
+せ|se|A mouth with one big tooth saying "seh".|せんせい|teacher
+そ|so|A zigzag sewing stitch.|そら|sky
+た|ta|Ta-da! A t and an a side by side.|たまご|egg
+ち|chi|A cheerleader with a big belly.|ちず|map
+つ|tsu|A tsunami wave curling over.|つくえ|desk
+て|te|A tail hanging down from a line.|てがみ|letter
+と|to|A toe with a splinter stuck in it.|とり|bird
+な|na|A nun praying, a knot in her rope.|なつ|summer
+に|ni|A knee next to two short lines.|にく|meat
+ぬ|nu|Noodles twisted around a chopstick.|ぬの|cloth
+ね|ne|A cat curling up its tail for a nap.|ねこ|cat
+の|no|A single swirl, like a no-entry sign.|のり|seaweed
+は|ha|Ha! A person laughing beside a wall.|はな|flower
+ひ|hi|A big grin: hee hee.|ひと|person
+ふ|fu|Mount Fuji with puffs of cloud around it.|ふね|boat
+へ|he|A gentle hill: heading up, then down.|へや|room
+ほ|ho|A harpoon with two crossbars: ho!|ほし|star
+ま|ma|Mama with her hair in a ponytail.|まど|window
+み|mi|It looks like the number 21: me at twenty-one.|みみ|ear
+む|mu|A cow with one horn saying moo.|むし|bug
+め|me|An eye with a swirl in it.|め|eye
+も|mo|A fishhook catching more and more worms.|もも|peach
+や|ya|A yak tossing its horns.|やま|mountain
+ゆ|yu|A unique fish swimming in a loop.|ゆき|snow
+よ|yo|A yo-yo hanging from a finger.|よる|night
+ら|ra|A rabbit with one ear up.|らくだ|camel
+り|ri|Two reeds growing by the river.|りす|squirrel
+る|ru|A route that loops back on itself.|るす|away from home
+れ|re|A rake leaning on a stick.|れきし|history
+ろ|ro|A road without the loop at the end.|ろうそく|candle
+わ|wa|A wasp's curved stinger.|わたし|I, me
+を|wo|Whoa! Someone stumbling into a wall.|ほんを よむ|read a book
+ん|n|A lowercase n written in a hurry.|ほん|book
+@katakana
+ア|a|Same sound as あ. Sharp, angular strokes.|アイス|ice cream
+イ|i|Same sound as い.|イギリス|the UK
+ウ|u|Same sound as う.|ウール|wool
+エ|e|Same sound as え.|エレベーター|elevator
+オ|o|Same sound as お.|オレンジ|orange
+カ|ka|Same sound as か, minus the dot.|カメラ|camera
+キ|ki|Same sound as き.|キロ|kilo
+ク|ku|Same sound as く.|クラス|class
+ケ|ke|Same sound as け.|ケーキ|cake
+コ|ko|Same sound as こ.|コーヒー|coffee
+サ|sa|Same sound as さ.|サラダ|salad
+シ|shi|Same sound as し. Strokes rise up.|シャツ|shirt
+ス|su|Same sound as す.|スープ|soup
+セ|se|Same sound as せ.|セーター|sweater
+ソ|so|Same sound as そ. Strokes fall down.|ソース|sauce
+タ|ta|Same sound as た.|タクシー|taxi
+チ|chi|Same sound as ち.|チーズ|cheese
+ツ|tsu|Same sound as つ. Strokes fall down.|ツアー|tour
+テ|te|Same sound as て.|テレビ|TV
+ト|to|Same sound as と.|トマト|tomato
+ナ|na|Same sound as な.|ナイフ|knife
+ニ|ni|Same sound as に.|ニュース|news
+ヌ|nu|Same sound as ぬ.|ヌードル|noodles
+ネ|ne|Same sound as ね.|ネクタイ|necktie
+ノ|no|Same sound as の.|ノート|notebook
+ハ|ha|Same sound as は.|ハンバーガー|hamburger
+ヒ|hi|Same sound as ひ.|ヒーター|heater
+フ|fu|Same sound as ふ.|フォーク|fork
+ヘ|he|Same sound as へ.|ヘリコプター|helicopter
+ホ|ho|Same sound as ほ.|ホテル|hotel
+マ|ma|Same sound as ま.|マスク|mask
+ミ|mi|Same sound as み.|ミルク|milk
+ム|mu|Same sound as む.|ムード|mood
+メ|me|Same sound as め.|メニュー|menu
+モ|mo|Same sound as も.|モデル|model
+ヤ|ya|Same sound as や.|タイヤ|tire
+ユ|yu|Same sound as ゆ.|ユニフォーム|uniform
+ヨ|yo|Same sound as よ.|ヨーグルト|yogurt
+ラ|ra|Same sound as ら.|ラーメン|ramen
+リ|ri|Same sound as り.|リモコン|remote control
+ル|ru|Same sound as る.|ルール|rule
+レ|re|Same sound as れ.|レモン|lemon
+ロ|ro|Same sound as ろ.|ロボット|robot
+ワ|wa|Same sound as わ.|ワイン|wine
+ヲ|wo|Same sound as を. Rare outside old texts.|ヲタク|otaku (playful spelling)
+ン|n|Same sound as ん. The stroke rises up.|パン|bread

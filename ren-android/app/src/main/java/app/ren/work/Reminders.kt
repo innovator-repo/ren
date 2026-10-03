@@ -1,0 +1,140 @@
+package app.ren.work
+
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import app.ren.MainActivity
+import app.ren.R
+import app.ren.data.local.StudyDao
+import app.ren.widget.WidgetUpdater
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.concurrent.TimeUnit
+
+/** Spec §10: once a day, if anything is due, one gentle notification that opens the review queue. */
+@HiltWorker
+class ReviewReminderWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
+    private val studyDao: StudyDao,
+) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        val due = studyDao.getDueCards(System.currentTimeMillis()).first().size
+        if (due > 0) NotificationHelper.showReviewReminder(
+            applicationContext, "Reviews are waiting", "You have $due Japanese items ready to review today.",
+        )
+        WidgetUpdater.refresh(applicationContext)
+        return Result.success()
+    }
+}
+
+object NotificationHelper {
+    const val CHANNEL = "daily_reminder"
+    private const val ID = 7
+
+    fun ensureChannel(context: Context) {
+        if (Build.VERSION.SDK_INT < 26) return
+        val channel = NotificationChannel(CHANNEL, context.getString(R.string.channel_reminders), NotificationManager.IMPORTANCE_DEFAULT)
+            .apply { description = context.getString(R.string.channel_reminders_desc) }
+        context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+    }
+
+    fun showReviewReminder(context: Context, title: String, body: String) {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) return
+        ensureChannel(context)
+        val open = PendingIntent.getActivity(
+            context, 1, DeepLinks.sessionIntent(context, quick = false), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val later = PendingIntent.getBroadcast(
+            context, 2, Intent(context, ReminderActionReceiver::class.java).setAction(ReminderActionReceiver.ACTION_LATER),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val notification = NotificationCompat.Builder(context, CHANNEL)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(ContextCompat.getColor(context, R.color.akane))
+            .setContentTitle(title)
+            .setContentText(body)
+            .setContentIntent(open)
+            .setAutoCancel(true)
+            .addAction(0, "Start session", open)
+            .addAction(0, "Later", later)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .build()
+        runCatching { NotificationManagerCompat.from(context).notify(ID, notification) }
+    }
+
+    fun cancel(context: Context) = NotificationManagerCompat.from(context).cancel(ID)
+}
+
+/** Handles the notification's "Later" action: dismiss now, ask again in an hour. */
+class ReminderActionReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != ACTION_LATER) return
+        NotificationHelper.cancel(context)
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "reminder-snooze", ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<ReviewReminderWorker>().setInitialDelay(1, TimeUnit.HOURS).build(),
+        )
+    }
+
+    companion object {
+        const val ACTION_LATER = "app.ren.REMINDER_LATER"
+    }
+}
+
+object ReminderScheduler {
+    private const val WORK = "daily-review-reminder"
+
+    /** Schedules the daily reminder at the learner's chosen minute of the day (default 8:00 PM). */
+    fun schedule(context: Context, enabled: Boolean, minuteOfDay: Int) {
+        val wm = WorkManager.getInstance(context)
+        if (!enabled) { wm.cancelUniqueWork(WORK); return }
+        val now = LocalDateTime.now()
+        var next = now.with(LocalTime.of(minuteOfDay / 60, minuteOfDay % 60))
+        if (!next.isAfter(now)) next = next.plusDays(1)
+        val request = PeriodicWorkRequestBuilder<ReviewReminderWorker>(1, TimeUnit.DAYS)
+            .setInitialDelay(Duration.between(now, next).toMillis(), TimeUnit.MILLISECONDS)
+            .build()
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, request)
+    }
+}
+
+/** ren://session opens the daily queue; ren://session/quick opens a five-card round (widget). */
+object DeepLinks {
+    const val QUICK_SIZE = 5
+
+    fun sessionIntent(context: Context, quick: Boolean): Intent =
+        Intent(Intent.ACTION_VIEW, Uri.parse(if (quick) "ren://session/quick" else "ren://session"), context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+    /** Returns null for intents that are not session links, true for a quick session, false for the daily one. */
+    fun parse(intent: Intent?): Boolean? {
+        val uri = intent?.data ?: return null
+        if (uri.scheme != "ren" || uri.host != "session") return null
+        return uri.pathSegments.firstOrNull() == "quick"
+    }
+}
