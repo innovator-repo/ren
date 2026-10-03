@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,12 +23,35 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    // Upload key comes from keystore.properties (git-ignored) or REN_* environment variables in CI.
+    // Without either, the release build is left unsigned for Play App Signing to handle later.
+    val keystoreProps = Properties().apply {
+        rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+    }
+    fun signingValue(key: String, env: String): String? = keystoreProps.getProperty(key) ?: System.getenv(env)
+    val storePath = signingValue("storeFile", "REN_KEYSTORE")
+    signingConfigs {
+        if (storePath != null) {
+            create("upload") {
+                storeFile = rootProject.file(storePath)
+                storePassword = signingValue("storePassword", "REN_KEYSTORE_PASSWORD")
+                keyAlias = signingValue("keyAlias", "REN_KEY_ALIAS")
+                keyPassword = signingValue("keyPassword", "REN_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.findByName("upload")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+    }
+    bundle {
+        // Ren switches between English and Japanese in-app, so every language must ship in the base APK.
+        language { enableSplit = false }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -56,6 +81,7 @@ ksp {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

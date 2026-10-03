@@ -8,3 +8,6 @@ captures/
 .kotlin/
 tools/seed/.cache/
 __pycache__/
+keystore.properties
+*.jks
+*.keystore

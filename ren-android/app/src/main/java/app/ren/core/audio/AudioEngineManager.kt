@@ -29,6 +29,9 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Whether the device's text-to-speech can voice Japanese, which every word in Ren relies on. */
+enum class VoiceStatus { Checking, Ready, Missing, NoEngine }
+
 enum class Sfx(val asset: String) { Correct("sfx/correct.wav"), Wrong("sfx/wrong.wav"), Complete("sfx/complete.wav") }
 
 data class StoryPlayback(
@@ -118,14 +121,37 @@ class AudioEngineManager @Inject constructor(
     /** The utterance currently being spoken, so speaker buttons can pulse. */
     val speaking: StateFlow<String?> = _speaking.asStateFlow()
 
+    private val _voice = MutableStateFlow(VoiceStatus.Checking)
+    val voice: StateFlow<VoiceStatus> = _voice.asStateFlow()
+
+    /** Starts the engine if needed and refreshes [voice]; call again after the user installs voice data. */
+    fun checkVoice() {
+        scope.launch(Dispatchers.Main) {
+            if (tts != null && ttsReady) { _voice.value = japaneseStatus(tts!!); return@launch }
+            withTts { }
+        }
+    }
+
+    private fun japaneseStatus(engine: TextToSpeech): VoiceStatus =
+        when (runCatching { engine.isLanguageAvailable(Locale.JAPAN) }.getOrDefault(TextToSpeech.LANG_NOT_SUPPORTED)) {
+            TextToSpeech.LANG_AVAILABLE, TextToSpeech.LANG_COUNTRY_AVAILABLE, TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE -> VoiceStatus.Ready
+            else -> VoiceStatus.Missing
+        }
+
     private fun withTts(block: (TextToSpeech) -> Unit) {
         val engine = tts
         if (engine != null && ttsReady) { block(engine); return }
         synchronized(queued) { queued += { tts?.let(block) } }
         if (engine == null) {
             tts = TextToSpeech(context) { status ->
+                if (status != TextToSpeech.SUCCESS) {
+                    _voice.value = VoiceStatus.NoEngine
+                    tts = null
+                    synchronized(queued) { queued.clear() }
+                }
                 if (status == TextToSpeech.SUCCESS) {
                     tts?.language = Locale.JAPAN
+                    tts?.let { _voice.value = japaneseStatus(it) }
                     tts?.setOnUtteranceProgressListener(listener)
                     ttsReady = true
                     val run = synchronized(queued) { queued.toList().also { queued.clear() } }

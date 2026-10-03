@@ -1,8 +1,17 @@
 # Ren 連 — Japanese from zero to N3 (Android)
 
 A native Android app built from the *Ren Architecture Spec v1.1* and the *Ren App Design* prototype:
-iOS Human Interface styling on Jetpack Compose (no Material components), Clean Architecture + MVI,
+a calm, compact interface on Jetpack Compose (no Material components), Clean Architecture + MVI,
 an FSRS v5 scheduler, radical-first kanji, and answers that are always drawn or typed, never picked.
+
+## Design
+
+White pages, soft grouped fills instead of stacked cards, and one raised card per screen for the
+thing to do next. Type is Geist for the interface, Newsreader for English reading text and a subset
+of Noto Serif JP (Mincho) for Japanese sentences. The scale is deliberately small: a 30 sp large
+title, 15 sp rows, 12 sp section labels, 21 dp toolbar icons and 22 dp tab icons. Haptics are
+composed from the vibrator's primitives (tick, click, a low double-tap for "no", a rising pair for
+"done") and follow the system touch-feedback setting.
 
 | Today | Path | Matrix | Reader |
 |---|---|---|---|
@@ -40,7 +49,7 @@ a home-screen widget, and the daily reminder notification.
 |---|---|
 | §2 Colour tokens, type scale, springs, press-to-96% | `core/designsystem/theme/Theme.kt`, `components/Components.kt` (`pressable`) |
 | §2 Frosted bars: 20 dp backdrop blur on API 31+, translucent fallback | `components/Bars.kt` (`frostedGlass`, via Haze) |
-| §2 Haptics: tick per stroke, click on submit, double heavy click on a miss | `core/haptics/Haptics.kt` |
+| §2 Haptics: tick per stroke, click on submit, low double-tap on a miss | `core/haptics/Haptics.kt` |
 | §2 Velocity-tracked swipe-down sheets | `components/Sheet.kt` |
 | §3 Dual coding, radical-first equations, production-only answers, furigana fading, romaji off after day 3 | `feature/session/*`, `domain/usecase/Insights.kt`, `feature/settings` |
 | §3 Micro-dosing cap, streak freezes (burnout shield) | `domain/usecase/Planner.kt` (`SessionPlanner`), `Time.kt` (`Streak`) |
@@ -66,8 +75,10 @@ a home-screen widget, and the daily reminder notification.
   the character draws itself in stroke order with each radical tinted, so step 2 stays visual.
 - **Preferences** use a typed DataStore stored in protobuf wire format via
   `kotlinx-serialization-protobuf`. Same API as Proto DataStore, no `protoc` build step.
-- **Schema upgrades** use `fallbackToDestructiveMigration()` as the spec does. That also resets
-  progress, which lives in the same database; add real migrations before the first schema change.
+- **Schema upgrades** need a real `Migration`. The spec's `fallbackToDestructiveMigration()` would wipe
+  learner progress, so Ren only rebuilds from the asset on a downgrade.
+- **Speech** relies on the phone's Japanese TTS voice. Settings shows whether it is installed and
+  offers the system installer if not.
 - **Content size.** The spec targets 120 N5 kanji and 600 words; the seed has 143 kanji and 228 words.
   The pipeline below scales to more without code changes.
 - **Flick keyboard.** The prototype's `☆123` and `あいう` keys were decorative, so those slots are a
@@ -83,8 +94,17 @@ Requirements: JDK 17+ and the Android SDK with platform 35 (`local.properties` �
 ./gradlew :app:assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
 ./gradlew :app:testDebugUnitTest      # domain, Room-on-Robolectric and screenshot tests (55)
 ./gradlew :app:recordPaparazziDebug   # re-render the screenshots
-./gradlew :app:assembleRelease        # R8-minified, 3.9 MB (sign it with your own key)
+./gradlew :app:bundleRelease          # Play bundle, R8-minified; signed if keystore.properties exists
+tools/store/export.sh                 # Play icon, feature graphic and screenshots → docs/play-store/graphics
 ```
+
+Publishing: [docs/play-store/release.md](docs/play-store/release.md) (signing, versioning, upload),
+[listing.md](docs/play-store/listing.md) (store copy), [policy-answers.md](docs/play-store/policy-answers.md)
+(data safety, content rating) and [PRIVACY.md](PRIVACY.md).
+
+| Feature graphic | |
+|---|---|
+| ![](docs/play-store/graphics/feature-graphic-1024x500.png) | ![](docs/play-store/graphics/screenshot-2-radicals.png) |
 
 Min SDK 26, target SDK 35. Kotlin 2.0, Compose BOM 2024.12, Hilt 2.52, Room 2.6, Media3 1.5,
 WorkManager 2.10, Glance 1.1, Navigation 2.8 type-safe routes.
@@ -112,7 +132,7 @@ Room in CI to prove it.
 
 ```
 app.ren
-├── core/designsystem   Cupertino primitives: theme, bars, sheets, pad, flick keyboard, ruby text
+├── core/designsystem   Theme, bars, sheets, stroke pad, flick keyboard, ruby text
 ├── core/{audio,haptics,mvi}
 ├── domain              Pure Kotlin: models, FSRS, stroke matcher, planners, repository interfaces
 ├── data                Room entities and DAOs, DataStore, repository implementations

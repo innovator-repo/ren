@@ -20,7 +20,9 @@ object AppModule {
     fun provideDatabase(@ApplicationContext context: Context): RenDatabase =
         Room.databaseBuilder(context, RenDatabase::class.java, "ren_core.db")
             .createFromAsset("database/ren_core.db")
-            .fallbackToDestructiveMigration()
+            // Learner progress lives here, so a schema bump must ship a Migration (schemas/ holds every version).
+            // Only a downgrade, which Play never performs, may rebuild from the asset.
+            .fallbackToDestructiveMigrationOnDowngrade()
             .build()
 
     @Provides

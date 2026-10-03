@@ -1,0 +1,12 @@
+# Hand-written startup profile, compiled ahead of time by profileinstaller on install.
+# Covers app start, the four tabs, the session flow and the Compose runtime they lean on.
+HSPLapp/ren/**->**(**)**
+Lapp/ren/**;
+HSPLandroidx/compose/runtime/**->**(**)**
+HSPLandroidx/compose/ui/**->**(**)**
+HSPLandroidx/compose/foundation/**->**(**)**
+HSPLandroidx/compose/animation/**->**(**)**
+HSPLandroidx/navigation/**->**(**)**
+HSPLandroidx/room/**->**(**)**
+HSPLandroidx/datastore/**->**(**)**
+HSPLkotlinx/coroutines/**->**(**)**

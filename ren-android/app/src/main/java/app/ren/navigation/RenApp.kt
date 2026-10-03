@@ -1,5 +1,7 @@
 package app.ren.navigation
 
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
@@ -144,12 +146,19 @@ fun MainScreen(tab: Int, onTab: (Int) -> Unit) {
     )
     Box(Modifier.fillMaxSize().background(Ren.colors.canvas)) {
         Box(Modifier.fillMaxSize().glassSource(haze)) {
-            holder.SaveableStateProvider(tab) {
-                when (tab) {
-                    Tabs.TODAY -> TodayRoute(bottomInset)
-                    Tabs.PATH -> PathRoute(bottomInset)
-                    Tabs.MATRIX -> MatrixRoute(bottomInset)
-                    else -> ReaderRoute(bottomInset)
+            // A quick crossfade, so switching tabs never flashes a blank frame.
+            AnimatedContent(
+                targetState = tab,
+                transitionSpec = { fadeIn(tween(160, delayMillis = 40)) togetherWith fadeOut(tween(90)) },
+                label = "tab",
+            ) { shown ->
+                holder.SaveableStateProvider(shown) {
+                    when (shown) {
+                        Tabs.TODAY -> TodayRoute(bottomInset)
+                        Tabs.PATH -> PathRoute(bottomInset)
+                        Tabs.MATRIX -> MatrixRoute(bottomInset)
+                        else -> ReaderRoute(bottomInset)
+                    }
                 }
             }
         }

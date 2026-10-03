@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -195,6 +196,23 @@ private fun GraphCanvas(graph: KnowledgeGraph, selectedId: String?, modifier: Mo
             )
         }
 
+        // Glyphs are laid out once at 1x and scaled while drawing, so pinch and pan never re-measure text.
+        val glyphLayouts = remember(graph, c) {
+            graph.nodes.map { n ->
+                measurer.measure(
+                    n.glyph,
+                    TextStyle(
+                        fontSize = (if (n.kind == NodeKind.RADICAL) 24 else 20).sp,
+                        color = if (nodeColor(n, c) != null) Color.White else c.ink2,
+                        fontWeight = FontWeight.Medium,
+                    ),
+                )
+            }
+        }
+        val wordLayouts = remember(selected, c) {
+            selected?.words.orEmpty().map { w -> measurer.measure(w.text, TextStyle(fontSize = 10.sp, color = c.ink2)) }
+        }
+
         fun toScreen(x: Float, y: Float) = Offset(
             viewW / 2 + (x - graph.width / 2) * unit * scale + pan.x,
             viewH / 2 + (y - graph.height / 2) * unit * scale + pan.y,
@@ -209,7 +227,7 @@ private fun GraphCanvas(graph: KnowledgeGraph, selectedId: String?, modifier: Mo
                         pan += panChange
                     }
                 }
-                .pointerInput(graph, scale, pan) {
+                .pointerInput(graph) {
                     detectTapGestures { tap ->
                         val hit = graph.nodes.minByOrNull { n -> (toScreen(n.x, n.y) - tap).getDistance() }
                         if (hit != null && (toScreen(hit.x, hit.y) - tap).getDistance() < 34 * unit * scale.coerceAtLeast(0.8f)) {
@@ -237,11 +255,13 @@ private fun GraphCanvas(graph: KnowledgeGraph, selectedId: String?, modifier: Mo
                     val p = center + Offset((cos(angle) * 52 * s).toFloat(), (sin(angle) * 52 * s).toFloat())
                     drawLine(c.radical.copy(alpha = 0.45f), center, p, 1.5f * s)
                     drawCircle(c.ink2, 5f * s, p)
-                    val label = measurer.measure(w.text, TextStyle(fontSize = (10 * scale).sp, color = c.ink2))
-                    drawText(label, topLeft = Offset(p.x - label.size.width / 2f, p.y + 7f * s))
+                    val label = wordLayouts.getOrNull(i) ?: return@forEachIndexed
+                    scale(scale, pivot = p) {
+                        drawText(label, topLeft = Offset(p.x - label.size.width / 2f, p.y + 7f * unit))
+                    }
                 }
             }
-            for (n in graph.nodes) {
+            graph.nodes.forEachIndexed { i, n ->
                 val p = toScreen(n.x, n.y)
                 val r = (if (n.kind == NodeKind.RADICAL) 24f else 20f) * s
                 val color = nodeColor(n, c)
@@ -253,11 +273,10 @@ private fun GraphCanvas(graph: KnowledgeGraph, selectedId: String?, modifier: Mo
                     drawCircle(c.ink3, r, p, style = Stroke(1.5f * s, pathEffect = PathEffect.dashPathEffect(floatArrayOf(3f * s, 3f * s))))
                 }
                 if (n.id == selectedId) drawCircle(c.ink, r + 5f * s, p, style = Stroke(2f * s))
-                val text = measurer.measure(
-                    n.glyph,
-                    TextStyle(fontSize = ((if (n.kind == NodeKind.RADICAL) 24 else 20) * scale).sp, color = if (color != null) Color.White else c.ink2, fontWeight = FontWeight.Medium),
-                )
-                drawText(text, topLeft = Offset(p.x - text.size.width / 2f, p.y - text.size.height / 2f))
+                val text = glyphLayouts[i]
+                scale(scale, pivot = p) {
+                    drawText(text, topLeft = Offset(p.x - text.size.width / 2f, p.y - text.size.height / 2f))
+                }
             }
         }
     }

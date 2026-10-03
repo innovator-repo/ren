@@ -1,6 +1,10 @@
 package app.ren.feature.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,13 +19,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.ren.BuildConfig
+import app.ren.core.audio.AudioEngineManager
+import app.ren.core.audio.VoiceStatus
+import app.ren.core.designsystem.components.Chevron
 import app.ren.core.designsystem.components.CupertinoSwitch
+import app.ren.core.designsystem.components.SmallButton
 import app.ren.core.designsystem.components.GroupedList
 import app.ren.core.designsystem.components.GroupedListBuilder
 import app.ren.core.designsystem.components.NavBar
@@ -50,7 +61,13 @@ import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class SettingsUiState(val prefs: UserPreferences = UserPreferences(), val pathDay: Long = 1)
+data class SettingsUiState(
+    val prefs: UserPreferences = UserPreferences(),
+    val pathDay: Long = 1,
+    val voice: VoiceStatus = VoiceStatus.Ready,
+)
+
+const val PRIVACY_URL = "https://github.com/bkumar-lgtm/test/blob/ccr-aec1bc7b-ot0hp9/ren-android/PRIVACY.md"
 
 sealed interface SettingsIntent {
     data class Update(val transform: (UserPreferences) -> UserPreferences) : SettingsIntent
@@ -62,9 +79,11 @@ class SettingsViewModel @Inject constructor(
     private val prefs: PreferencesRepository,
     private val clock: Clock,
     @ApplicationContext private val context: Context,
+    private val audio: AudioEngineManager,
 ) : MviViewModel<SettingsUiState, SettingsIntent, Unit>(SettingsUiState()) {
 
     init {
+        viewModelScope.launch { audio.voice.collect { v -> setState { copy(voice = v) } } }
         viewModelScope.launch {
             prefs.preferences.collect { p ->
                 val day = if (p.startEpochDay <= 0) 1 else clock.epochDay() - p.startEpochDay + 1
@@ -72,6 +91,9 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    /** Re-checks the Japanese voice, e.g. on returning from the system's voice-data installer. */
+    fun refreshVoice() = audio.checkVoice()
 
     override fun onIntent(intent: SettingsIntent) {
         viewModelScope.launch {
@@ -98,7 +120,18 @@ class SettingsViewModel @Inject constructor(
 fun SettingsRoute(vm: SettingsViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val nav = LocalNavigator.current
-    SettingsScreen(state, onDone = nav::back) { vm.onIntent(SettingsIntent.Update(it)) }
+    val context = LocalContext.current
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshVoice() }
+    SettingsScreen(
+        state,
+        onDone = nav::back,
+        onInstallVoice = { context.openSafely(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)) },
+        onPrivacy = { context.openSafely(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_URL))) },
+    ) { vm.onIntent(SettingsIntent.Update(it)) }
+}
+
+private fun Context.openSafely(intent: Intent) {
+    try { startActivity(intent) } catch (_: ActivityNotFoundException) { }
 }
 
 private fun minuteLabel(m: Int): String {
@@ -109,7 +142,13 @@ private fun minuteLabel(m: Int): String {
 }
 
 @Composable
-fun SettingsScreen(state: SettingsUiState, onDone: () -> Unit, update: ((UserPreferences) -> UserPreferences) -> Unit) {
+fun SettingsScreen(
+    state: SettingsUiState,
+    onDone: () -> Unit,
+    onInstallVoice: () -> Unit = {},
+    onPrivacy: () -> Unit = {},
+    update: ((UserPreferences) -> UserPreferences) -> Unit,
+) {
     val c = Ren.colors
     val haze = remember { HazeState() }
     val top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
@@ -171,10 +210,34 @@ fun SettingsScreen(state: SettingsUiState, onDone: () -> Unit, update: ((UserPre
             item {
                 SegmentedControl(listOf("Audio", "Text"), if (p.minedAudioFirst) 0 else 1) { i -> update { it.copy(minedAudioFirst = i == 0) } }
             }
-            item { SectionHeader("Voice speed") }
+            item { SectionHeader("Voice") }
+            item {
+                GroupedList {
+                    row {
+                        Label("Japanese voice")
+                        when (state.voice) {
+                            VoiceStatus.Ready -> Txt("Ready", Ren.type.body, color = c.ink2)
+                            VoiceStatus.Checking -> Txt("Checking", Ren.type.body, color = c.ink3)
+                            VoiceStatus.Missing -> SmallButton("Install", primary = true, onClick = onInstallVoice)
+                            VoiceStatus.NoEngine -> Txt("Unavailable", Ren.type.body, color = c.ink2)
+                        }
+                    }
+                }
+            }
             item {
                 val idx = when { p.speechRate < 0.8f -> 0; p.speechRate < 1f -> 1; else -> 2 }
-                SegmentedControl(listOf("Slow", "Learner", "Natural"), idx) { i -> update { it.copy(speechRate = listOf(0.7f, 0.9f, 1.0f)[i]) } }
+                SegmentedControl(listOf("Slow", "Learner", "Natural"), idx, Modifier.padding(top = 10.dp)) { i ->
+                    update { it.copy(speechRate = listOf(0.7f, 0.9f, 1.0f)[i]) }
+                }
+            }
+            item {
+                SectionFooter(
+                    when (state.voice) {
+                        VoiceStatus.Missing -> "Words are read aloud by your phone's speech engine. Install its Japanese voice to hear them."
+                        VoiceStatus.NoEngine -> "No speech engine was found. Install Speech Services by Google to hear words read aloud."
+                        else -> "Words are read aloud by your phone's Japanese voice."
+                    },
+                )
             }
 
             item { SectionHeader("Feel") }
@@ -204,12 +267,13 @@ fun SettingsScreen(state: SettingsUiState, onDone: () -> Unit, update: ((UserPre
                 GroupedList {
                     infoRow("Version", BuildConfig.VERSION_NAME)
                     infoRow("Day on your path", "${state.pathDay}")
+                    row(onClick = onPrivacy) { Label("Privacy policy"); Chevron() }
                 }
             }
             item {
                 SectionFooter(
                     "Stroke data: KanjiVG by Ulrich Apel (CC BY-SA 3.0). Readings: KANJIDIC2, EDRDG (CC BY-SA 4.0). " +
-                        "Pitch accents: Kanjium (CC BY-SA 4.0). Type: Inter (SIL OFL). Scheduling: FSRS v5.",
+                        "Pitch accents: Kanjium (CC BY-SA 4.0). Type: Geist, Newsreader and Noto Serif JP (SIL OFL). Scheduling: FSRS v5.",
                 )
             }
         }

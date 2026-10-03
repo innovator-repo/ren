@@ -102,7 +102,7 @@ class ScreenshotTest {
 
     // ------------------------------------------------------------------ tabs
 
-    private fun todayState(): TodayUiState {
+    internal fun todayState(): TodayUiState {
         val kyuu = SampleData.unitFor("休").copy(completedAt = SampleData.NOW)
         val newToday = listOf(kyuu, SampleData.unitFor("好"), SampleData.unitFor("明"))
         return TodayUiState(
@@ -121,7 +121,9 @@ class ScreenshotTest {
     @Test fun today() = shot(tabs = 0) { TodayScreen(todayState(), TabBarHeight) {} }
     @Test fun todayDark() = shot(dark = true, tabs = 0) { TodayScreen(todayState(), TabBarHeight) {} }
 
-    @Test fun path() = shot(tabs = 1) {
+    @Test fun path() = shot(tabs = 1) { PathScreen(pathState(), TabBarHeight) {} }
+
+    internal fun pathState(): PathUiState {
         val progress = CurriculumPlanner.stageProgress(units, cards.values.toList(), unlockAll = false)
             .mapIndexed { i, p -> if (i < 2) p.copy(graduatedShare = 1.0, unlocked = true) else p.copy(unlocked = i == 2) }
         val stages = progress.map { p ->
@@ -133,10 +135,10 @@ class ScreenshotTest {
                 if (i == 2) SampleData.unitFor("好").id else null,
             )
         }
-        PathScreen(PathUiState(false, 34, stages), TabBarHeight) {}
+        return PathUiState(false, 34, stages)
     }
 
-    private fun matrixState(): MatrixUiState {
+    internal fun matrixState(): MatrixUiState {
         val graph = KnowledgeGraphBuilder.build(lib, cards)
         return MatrixUiState(false, graph, graph.nodes.first { it.glyph == "休" }.id)
     }
@@ -144,14 +146,13 @@ class ScreenshotTest {
     @Test fun matrix() = shot(tabs = 2) { MatrixScreen(matrixState(), TabBarHeight) {} }
     @Test fun matrixDark() = shot(dark = true, tabs = 2) { MatrixScreen(matrixState(), TabBarHeight) {} }
 
-    @Test fun reader() = shot(tabs = 3) {
-        val insights = lib.stories.map { StoryAnalyzer.analyze(it, lib, SampleData.day70) }
-        LibraryScreen(LibraryUiState(false, 0, insights), TabBarHeight) {}
-    }
+    @Test fun reader() = shot(tabs = 3) { LibraryScreen(libraryState(), TabBarHeight) {} }
+
+    internal fun libraryState() = LibraryUiState(false, 0, lib.stories.map { StoryAnalyzer.analyze(it, lib, SampleData.day70) })
 
     // ------------------------------------------------------------------ reading
 
-    private fun storyState(id: String, sheetWord: String?, mining: MiningUi?): StoryUiState {
+    internal fun storyState(id: String, sheetWord: String?, mining: MiningUi?): StoryUiState {
         val story = lib.stories.first { it.id == id }
         val sentences = story.sentences.mapIndexed { si, s ->
             SentenceUi(si, s.jp, s.en, s.segments.filterIsInstance<Segment.Word>().mapIndexed { wi, w ->
@@ -186,9 +187,7 @@ class ScreenshotTest {
     // ------------------------------------------------------------------ the six-step kanji flow
 
     private fun lessonShot(step: Int, ready: Boolean = true, dark: Boolean = false) = shot(dark) {
-        val unit = SampleData.unitFor("休")
-        val steps = LessonPlanner.steps(unit, lib, showRomaji = false)
-        SessionScreen(SessionUiState(SessionPage.Lesson(LessonUi(unit, steps, step, ready)), 1, 14, library = lib)) {}
+        SessionScreen(lessonState(step, ready)) {}
     }
 
     @Test fun step1PullApart() = lessonShot(0)
@@ -198,11 +197,21 @@ class ScreenshotTest {
     @Test fun step2PictureItDark() = lessonShot(1, dark = true)
 
     private fun review(word: String, phase: ReviewPhase, dark: Boolean = false) = shot(dark) {
+        SessionScreen(reviewState(word, phase)) {}
+    }
+
+    internal fun reviewState(word: String, phase: ReviewPhase): SessionUiState {
         val v = lib.vocabByText.getValue(word)
         val card: StudyCard = cards.getValue(v.id)
         val prompt = LessonPlanner.prompt(card, lib)!!
         val intervals = mapOf(Rating.Again to "10 min", Rating.Hard to "3 days", Rating.Good to "6 days", Rating.Easy to "14 days")
-        SessionScreen(SessionUiState(SessionPage.Review(ReviewUi(prompt, phase, intervals)), 7, 14, library = lib)) {}
+        return SessionUiState(SessionPage.Review(ReviewUi(prompt, phase, intervals)), 7, 14, library = lib)
+    }
+
+    internal fun lessonState(step: Int, ready: Boolean = true): SessionUiState {
+        val unit = SampleData.unitFor("休")
+        val steps = LessonPlanner.steps(unit, lib, showRomaji = false)
+        return SessionUiState(SessionPage.Lesson(LessonUi(unit, steps, step, ready)), 1, 14, library = lib)
     }
 
     @Test fun step5RecallTyped() = review("休日", ReviewPhase.Answering)
@@ -248,7 +257,7 @@ class ScreenshotTest {
 
 /** A plain phone status bar so the screenshots read like the prototype's frames. */
 @Composable
-private fun PhoneFrame(tab: Int?, content: @Composable () -> Unit) {
+internal fun PhoneFrame(tab: Int?, content: @Composable () -> Unit) {
     val c = Ren.colors
     Column(Modifier.fillMaxSize().background(c.canvas)) {
         Row(Modifier.fillMaxWidth().height(30.dp).padding(horizontal = 26.dp), verticalAlignment = Alignment.CenterVertically) {
