@@ -157,7 +157,7 @@ private fun LessonPage(ui: LessonUi, onIntent: (SessionIntent) -> Unit) {
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
         ) {
             VSpace(8.dp)
-            Txt(step.title, Ren.type.title1.copy(fontSize = 30.sp, lineHeight = 36.sp), modifier = Modifier.padding(horizontal = 4.dp))
+            Txt(step.title, Ren.type.title1, modifier = Modifier.padding(horizontal = 4.dp))
             VSpace(2.dp)
             Txt(step.subtitle, Ren.type.body, color = c.ink2, modifier = Modifier.padding(horizontal = 4.dp))
             VSpace(16.dp)
@@ -258,8 +258,8 @@ private fun SummaryPage(ui: SummaryUi, onIntent: (SessionIntent) -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
             VSpace(40.dp)
-            Box(Modifier.size(96.dp).scale(pop.value).clip(CircleShape).background(c.bamboo), Alignment.Center) {
-                RenIcon(RenIcons.Check, c.onAccent, size = 52.dp)
+            Box(Modifier.size(72.dp).scale(pop.value).clip(CircleShape).background(c.bamboo), Alignment.Center) {
+                RenIcon(RenIcons.Check, c.onAccent, size = 36.dp)
             }
             VSpace(22.dp)
             Txt(if (ui.lessonOnly) "Lesson complete" else "Session complete", Ren.type.title1, align = TextAlign.Center)
@@ -318,7 +318,7 @@ private fun EmptyPage(onIntent: (SessionIntent) -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                RenIcon(RenIcons.Sparkle, c.bamboo, size = 54.dp)
+                RenIcon(RenIcons.Sparkle, c.bamboo, size = 40.dp)
                 VSpace(14.dp)
                 Txt("Nothing is due", Ren.type.title2.copy(fontWeight = FontWeight.Bold))
                 VSpace(6.dp)

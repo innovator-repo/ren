@@ -108,7 +108,7 @@ fun StrokePad(
 
     Box(
         modifier
-            .widthIn(max = 320.dp)
+            .widthIn(max = 290.dp)
             .fillMaxWidth()
             .aspectRatio(1f)
             .graphicsLayer { translationX = shake.value }

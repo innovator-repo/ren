@@ -127,9 +127,9 @@ private fun PullApartStep(step: LessonStep.PullApart, key: Any) {
     LaunchedEffect(t > 0.5f) { if (t > 0.5f && !crossed) { crossed = true; haptics.tick() } }
 
     Card(padding = PaddingValues(16.dp)) {
-        Box(Modifier.fillMaxWidth().height(230.dp), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxWidth().height(184.dp), contentAlignment = Alignment.Center) {
             StrokeGlyph(
-                paths, Modifier.size(200.dp), width = 5.2f,
+                paths, Modifier.size(156.dp), width = 5.2f,
                 colorOf = { i -> if (partOf[i] >= 0) lerp(c.ink, c.radical, (t * 3).coerceIn(0f, 1f)) else c.ink.copy(alpha = 1f - 0.55f * t) },
                 offsetOf = { i -> if (partOf[i] >= 0) directions[partOf[i]] * (24f * t) else Offset.Zero },
             )
@@ -166,7 +166,7 @@ private fun MeetKanjiStep(step: LessonStep.MeetKanji, onSpeak: (String) -> Unit)
     val k = step.kanji
     Card(padding = PaddingValues(20.dp)) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            StrokeGlyph(rememberStrokePaths(k.strokes), Modifier.size(180.dp), width = 5.2f, colorOf = { c.ink })
+            StrokeGlyph(rememberStrokePaths(k.strokes), Modifier.size(140.dp), width = 5.2f, colorOf = { c.ink })
         }
         VSpace(10.dp)
         Txt(k.meaning, Ren.type.title2.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
@@ -194,7 +194,7 @@ private fun ReadingBox(label: String, value: String, modifier: Modifier, color: 
     val c = Ren.colors
     Column(modifier.clip(RoundedCornerShape(12.dp)).background(c.soft(color, 0.1f)).padding(horizontal = 12.dp, vertical = 8.dp)) {
         Txt(label.uppercase(), Ren.type.caption2, color = color)
-        Txt(value, Ren.type.body.jp(17.sp, FontWeight.Medium), maxLines = 2)
+        Txt(value, Ren.type.body.jp(15.sp, FontWeight.Medium), maxLines = 2)
     }
 }
 
@@ -219,7 +219,7 @@ private fun PictureItStep(step: LessonStep.PictureIt, onSpeak: (String) -> Unit)
             }
         }
     }
-    Txt(story, Ren.type.title3.copy(fontWeight = FontWeight.Bold, fontSize = 21.sp, lineHeight = 28.sp))
+    Txt(story, Ren.type.read.copy(fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold))
     VSpace(16.dp)
     SpeakPill(step.audioText) { onSpeak(step.audioText) }
 }
@@ -227,7 +227,7 @@ private fun PictureItStep(step: LessonStep.PictureIt, onSpeak: (String) -> Unit)
 @Composable
 private fun SpeakPill(text: String, onClick: () -> Unit) {
     val c = Ren.colors
-    Pill(text, Modifier.pressable(onClick = onClick), icon = RenIcons.Speaker, iconTint = c.radical, background = c.surface, bold = false)
+    Pill(text, Modifier.pressable(onClick = onClick), icon = RenIcons.Speaker, iconTint = c.radical, background = c.group, bold = false)
 }
 
 // ------------------------------------------------------------------ 3. write it
@@ -249,7 +249,7 @@ private fun WriteStep(step: LessonStep.WriteIt, pad: StrokePadState, onReady: ()
             else -> Pill("Stroke 1 of ${step.strokes.size}", bold = false, color = c.ink2)
         }
         Box(Modifier.weight(1f))
-        CircleIconButton(RenIcons.Undo, "Undo last stroke", background = c.surface, size = 38.dp, onClick = pad::undo)
+        CircleIconButton(RenIcons.Undo, "Undo last stroke", size = 32.dp, iconSize = 15.dp, onClick = pad::undo)
     }
     if (step.tip != null) {
         VSpace(12.dp)
@@ -283,11 +283,11 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
     var message by remember(key) { mutableStateOf("Tap a part of ${step.kanji?.character ?: ""}.") }
     val shake = remember(key) { Animatable(0f) }
     val k = step.kanji
-    val glyphSize = 96.dp
+    val glyphSize = 76.dp
 
     Card(padding = PaddingValues(top = 22.dp, bottom = 22.dp, start = 16.dp, end = 16.dp)) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            SpeakerButton(size = 60.dp) { onSpeak(step.word.reading) }
+            SpeakerButton(size = 44.dp) { onSpeak(step.word.reading) }
         }
         VSpace(18.dp)
         Row(Modifier.fillMaxWidth().graphicsLayer { translationX = shake.value }, horizontalArrangement = Arrangement.Center) {
@@ -299,7 +299,7 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
                     if (strokes.isNotEmpty()) {
                         StrokeGlyph(rememberStrokePaths(strokes), Modifier.fillMaxSize(), width = 4.8f, colorOf = { c.ink })
                     } else {
-                        Txt(ch.toString(), Ren.type.body.jp(84.sp, FontWeight.Normal), modifier = Modifier.align(Alignment.Center), color = c.ink, maxLines = 1)
+                        Txt(ch.toString(), Ren.type.body.jp(64.sp, FontWeight.Normal), modifier = Modifier.align(Alignment.Center), color = c.ink, maxLines = 1)
                     }
                     if (isTarget && k != null && step.targetComponent != null) {
                         // Hit areas over each radical, from KanjiVG stroke geometry.
@@ -344,7 +344,7 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
         AnimatedVisibility(solved, enter = fadeIn() + expandVertically()) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 VSpace(6.dp)
-                Txt(step.word.reading, Ren.type.title3.jp(22.sp, FontWeight.Medium), color = c.ink2)
+                Txt(step.word.reading, Ren.type.title3.jp(18.sp, FontWeight.Medium), color = c.ink2)
                 Txt(step.word.meaning, Ren.type.callout, color = c.ink2)
             }
         }
@@ -362,7 +362,7 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
         Card(padding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)) {
             step.otherWords.forEach { w ->
                 Row(Modifier.fillMaxWidth().pressable { onSpeak(w.reading) }.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Txt(w.text, Ren.type.body.jp(20.sp, FontWeight.Medium))
+                    Txt(w.text, Ren.type.body.jp(17.sp, FontWeight.Medium))
                     HSpace(10.dp)
                     Txt(w.reading, Ren.type.callout, color = c.ink2)
                     Box(Modifier.weight(1f))
@@ -424,18 +424,18 @@ private fun MeetKanaStep(step: LessonStep.MeetKana, onSpeak: (String) -> Unit) {
     val kana = step.kana
     Card(padding = PaddingValues(20.dp)) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            StrokeGlyph(rememberStrokePaths(kana.strokes), Modifier.size(170.dp), width = 5.4f, colorOf = { c.ink })
+            StrokeGlyph(rememberStrokePaths(kana.strokes), Modifier.size(132.dp), width = 5.4f, colorOf = { c.ink })
             if (step.showRomaji) Tag(kana.romaji, c.radical, Modifier.align(Alignment.TopEnd))
         }
         VSpace(12.dp)
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { SpeakerButton(size = 52.dp) { onSpeak(kana.character) } }
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { SpeakerButton(size = 40.dp) { onSpeak(kana.character) } }
         VSpace(14.dp)
         Txt(kana.mnemonic, Ren.type.body, color = c.ink2, modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
     }
     VSpace(14.dp)
     Card(Modifier.pressable { onSpeak(kana.exampleWord) }, padding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Txt(kana.exampleWord, Ren.type.title2.jp(24.sp, FontWeight.Medium))
+            Txt(kana.exampleWord, Ren.type.title3.jp(20.sp, FontWeight.Medium))
             HSpace(12.dp)
             Txt(kana.exampleMeaning, Ren.type.callout, color = c.ink2, modifier = Modifier.weight(1f))
             CircleIconButton(RenIcons.Speaker, "Hear ${kana.exampleWord}", background = c.soft(c.radical), tint = c.radical, size = 36.dp) {
@@ -454,12 +454,12 @@ private fun LearnPairStep(step: LessonStep.LearnPair, onSpeak: (String) -> Unit)
     val p = step.pair
     Card(padding = PaddingValues(vertical = 22.dp, horizontal = 14.dp)) {
         Row(Modifier.fillMaxWidth().pressable { onSpeak(step.vocab.reading) }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            Txt(p.noun, Ren.type.largeTitle.jp(44.sp, FontWeight.Bold))
+            Txt(p.noun, Ren.type.largeTitle.jp(36.sp, FontWeight.Bold))
             Txt(
-                p.particle, Ren.type.largeTitle.jp(44.sp, FontWeight.Bold), color = c.akane,
+                p.particle, Ren.type.largeTitle.jp(36.sp, FontWeight.Bold), color = c.akane,
                 modifier = Modifier.padding(horizontal = 4.dp).clip(RoundedCornerShape(10.dp)).background(c.soft(c.akane, 0.14f)).padding(horizontal = 6.dp),
             )
-            Txt(p.verb, Ren.type.largeTitle.jp(44.sp, FontWeight.Bold))
+            Txt(p.verb, Ren.type.largeTitle.jp(36.sp, FontWeight.Bold))
         }
         VSpace(10.dp)
         Txt(step.vocab.meaning, Ren.type.title3.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
@@ -476,7 +476,7 @@ private fun LearnPairStep(step: LessonStep.LearnPair, onSpeak: (String) -> Unit)
     Card(padding = PaddingValues(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                RubySentence(step.vocab.exampleJp, Ren.type.body.jp(19.sp))
+                RubySentence(step.vocab.exampleJp, Ren.type.readJp.copy(fontSize = 17.sp))
                 VSpace(4.dp)
                 Txt(step.vocab.exampleEn, Ren.type.footnote, color = c.ink2)
             }
@@ -493,7 +493,7 @@ private fun PairChip(text: String, gloss: String, color: Color) {
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Txt(text, Ren.type.body.jp(18.sp, FontWeight.Medium), color = color, maxLines = 1)
+        Txt(text, Ren.type.body.jp(16.sp, FontWeight.Medium), color = color, maxLines = 1)
         Txt(gloss, Ren.type.caption2, color = if (color == c.akane) c.akane else c.ink2, maxLines = 1)
     }
 }

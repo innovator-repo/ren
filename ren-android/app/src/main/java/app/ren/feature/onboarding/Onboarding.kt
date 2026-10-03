@@ -95,8 +95,8 @@ fun OnboardingScreen(onStart: () -> Unit) {
     Column(Modifier.fillMaxSize().background(c.canvas).padding(top = top, bottom = bottom)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 28.dp)) {
             VSpace(36.dp)
-            Box(Modifier.size(104.dp).clip(RoundedCornerShape(26.dp)).background(c.akane), Alignment.Center) {
-                StrokeGlyph(paths, Modifier.size(80.dp), width = 6.4f, colorOf = { Color.White }, revealOf = { i -> (draw.value - i).coerceIn(0f, 1f) })
+            Box(Modifier.size(76.dp).clip(RoundedCornerShape(19.dp)).background(c.akane), Alignment.Center) {
+                StrokeGlyph(paths, Modifier.size(58.dp), width = 6.4f, colorOf = { Color.White }, revealOf = { i -> (draw.value - i).coerceIn(0f, 1f) })
             }
             VSpace(26.dp)
             Txt("Welcome to Ren", Ren.type.largeTitle)
@@ -105,8 +105,8 @@ fun OnboardingScreen(onStart: () -> Unit) {
             Column(Modifier.alpha(fade.value).graphicsLayer { translationY = (1 - fade.value) * 24f }, verticalArrangement = Arrangement.spacedBy(22.dp)) {
                 features.forEach { f ->
                     Row(verticalAlignment = Alignment.Top) {
-                        Box(Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(c.soft(f.tint, 0.16f)), Alignment.Center) {
-                            RenIcon(f.icon, f.tint, size = 24.dp)
+                        Box(Modifier.size(32.dp).clip(RoundedCornerShape(9.dp)).background(f.tint), Alignment.Center) {
+                            RenIcon(f.icon, c.onAccent, size = 18.dp)
                         }
                         HSpace(16.dp)
                         Column(Modifier.weight(1f)) {

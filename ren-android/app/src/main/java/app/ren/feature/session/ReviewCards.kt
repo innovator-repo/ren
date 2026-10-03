@@ -78,12 +78,12 @@ fun TypedPrompt(ui: ReviewUi, onSpeak: () -> Unit) {
     val p = ui.prompt
     when (p.kind) {
         ReviewKind.TYPE_READING -> PromptCard("TYPE THE READING") {
-            Txt(p.glyph, Ren.type.largeTitle.jp(if (p.glyph.length > 3) 46.sp else 62.sp, FontWeight.Bold), maxLines = 1)
+            Txt(p.glyph, Ren.type.largeTitle.jp(if (p.glyph.length > 3) 38.sp else 50.sp, FontWeight.SemiBold), maxLines = 1)
             VSpace(6.dp)
             Txt(p.meaning, Ren.type.body, color = c.ink2, align = TextAlign.Center)
         }
         ReviewKind.TYPE_WORD -> PromptCard(if (Japanese.isKatakana(p.glyph.first())) "TYPE IT IN KATAKANA" else "TYPE IT IN KANA") {
-            Txt(p.meaning, Ren.type.title1, align = TextAlign.Center)
+            Txt(p.meaning, Ren.type.title2, align = TextAlign.Center)
             VSpace(6.dp)
             Txt("${p.glyph.length} kana", Ren.type.footnote, color = c.ink2)
         }
@@ -93,7 +93,7 @@ fun TypedPrompt(ui: ReviewUi, onSpeak: () -> Unit) {
             val pair = p.pair
             if (pair != null) {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    RubyWord(pair.noun, pair.nounReading, Ren.type.title1.jp(36.sp, FontWeight.Bold))
+                    RubyWord(pair.noun, pair.nounReading, Ren.type.title1.jp(30.sp, FontWeight.SemiBold))
                     HSpace(6.dp)
                     Slot(44.dp); HSpace(6.dp); Slot(88.dp)
                 }
@@ -102,7 +102,7 @@ fun TypedPrompt(ui: ReviewUi, onSpeak: () -> Unit) {
             }
         }
         ReviewKind.LISTEN -> PromptCard("LISTEN FIRST") {
-            SpeakerButton(size = 84.dp, onClick = onSpeak)
+            SpeakerButton(size = 64.dp, onClick = onSpeak)
             VSpace(12.dp)
             Txt("Type what you heard, or reveal it.", Ren.type.callout, color = c.ink2)
         }
@@ -120,7 +120,7 @@ private fun Slot(width: Dp) {
 @Composable
 fun ReadPrompt(ui: ReviewUi) {
     PromptCard("READ IT") {
-        RubySentence(ui.prompt.vocab?.exampleJp ?: ui.prompt.glyph, Ren.type.title2.jp(24.sp, FontWeight.Medium), lookOf = { WordLook(showRuby = false) })
+        RubySentence(ui.prompt.vocab?.exampleJp ?: ui.prompt.glyph, Ren.type.readJp.copy(fontSize = 21.sp), lookOf = { WordLook(showRuby = false) })
         VSpace(6.dp)
         Txt("Say it out loud, then reveal.", Ren.type.footnote, color = Ren.colors.ink2)
     }
@@ -142,11 +142,11 @@ fun DrawPrompt(ui: ReviewUi, showRomaji: Boolean, onSpeak: () -> Unit, onFinishe
                 Txt(p.kana?.let { if (it.script.name == "KATAKANA") "Katakana" else "Hiragana" } ?: "", Ren.type.title2.copy(fontWeight = FontWeight.Bold))
             }
             if (showRomaji) Tag(p.meaning, c.radical, Modifier.padding(end = 10.dp))
-            SpeakerButton(size = 52.dp, onClick = onSpeak)
+            SpeakerButton(size = 40.dp, onClick = onSpeak)
         }
     } else {
         Txt(if (p.radical != null) "WRITE THE RADICAL" else "WRITE THE KANJI", Ren.type.caption.copy(letterSpacing = 1.sp), color = c.ink2)
-        Txt(p.meaning, Ren.type.title1, maxLines = 2)
+        Txt(p.meaning, Ren.type.title2, maxLines = 2)
         p.kanji?.let { k ->
             val kun = k.kunyomi.firstOrNull()?.replace(".", "")?.trimStart('-')
             val on = k.onyomi.firstOrNull()
@@ -170,7 +170,7 @@ fun DrawPrompt(ui: ReviewUi, showRomaji: Boolean, onSpeak: () -> Unit, onFinishe
             if (!pad.hintShown) { pad.hintShown = true; hints++ }
         }
         HSpace(8.dp)
-        CircleIconButton(RenIcons.Undo, "Undo last stroke", background = c.surface, size = 38.dp, onClick = pad::undo)
+        CircleIconButton(RenIcons.Undo, "Undo last stroke", size = 32.dp, iconSize = 15.dp, onClick = pad::undo)
     }
 }
 
@@ -199,17 +199,17 @@ fun ResultCard(ui: ReviewUi, lib: ContentLibrary, onSpeak: () -> Unit) {
             val v = p.vocab
             when {
                 v != null && (p.kind == ReviewKind.LISTEN || p.kind == ReviewKind.READ) -> {
-                    RubySentence(v.exampleJp, Ren.type.title2.jp(24.sp, FontWeight.Medium))
+                    RubySentence(v.exampleJp, Ren.type.readJp.copy(fontSize = 21.sp))
                     VSpace(8.dp)
                     Txt(v.meaning, Ren.type.body, color = c.ink2, align = TextAlign.Center)
                 }
                 v != null -> {
-                    Txt(v.text, Ren.type.largeTitle.jp(if (v.text.length > 3) 44.sp else 58.sp, FontWeight.Bold), maxLines = 1)
-                    Txt(v.reading, Ren.type.title3.jp(22.sp), color = c.ink)
+                    Txt(v.text, Ren.type.largeTitle.jp(if (v.text.length > 3) 36.sp else 46.sp, FontWeight.SemiBold), maxLines = 1)
+                    Txt(v.reading, Ren.type.title3.jp(18.sp), color = c.ink)
                     Txt(v.meaning, Ren.type.body, color = c.ink2, align = TextAlign.Center)
                 }
                 else -> {
-                    StrokeGlyph(rememberStrokePaths(p.strokes), Modifier.size(120.dp), colorOf = { c.ink })
+                    StrokeGlyph(rememberStrokePaths(p.strokes), Modifier.size(96.dp), colorOf = { c.ink })
                     Txt(p.meaning, Ren.type.title3.copy(fontWeight = FontWeight.Bold))
                     p.kanji?.let { k ->
                         VSpace(4.dp)
@@ -244,7 +244,7 @@ fun ResultCard(ui: ReviewUi, lib: ContentLibrary, onSpeak: () -> Unit) {
     if (example != null) {
         VSpace(12.dp)
         Card(Modifier.pressable(onClick = onSpeak), padding = PaddingValues(16.dp)) {
-            RubySentence(example.first, Ren.type.body.jp(19.sp))
+            RubySentence(example.first, Ren.type.readJp.copy(fontSize = 17.sp))
             VSpace(4.dp)
             Txt(example.second, Ren.type.footnote, color = c.ink2)
         }
@@ -280,10 +280,10 @@ private fun RateButton(rating: Rating, interval: String, color: Color, suggested
     val c = Ren.colors
     Column(
         modifier
-            .height(78.dp)
+            .height(62.dp)
             .pressable(label = "${rating.name}, next review in $interval", scaleDown = 0.94f, onClick = onClick)
             .clip(RoundedCornerShape(14.dp))
-            .background(c.surface)
+            .background(c.group)
             .border(if (suggested) 2.dp else 0.dp, if (suggested) color.copy(alpha = 0.7f) else Color.Transparent, RoundedCornerShape(14.dp))
             .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -2,23 +2,25 @@ package app.ren.core.haptics
 
 import android.content.Context
 import android.os.Build
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 
-/** Spec §2 haptic vocabulary. */
+/** Spec §2 haptic vocabulary, from lightest to heaviest. */
 interface Haptics {
-    /** A stroke traced correctly, a key flicked into a new direction. */
+    /** Moving around: a tab, a segment, a stroke traced, a petal on the flick keyboard. */
     fun tick()
-    /** A card flip or an answer submitted. */
+    /** An answer submitted, a card flipped, a key committed. */
     fun click()
-    /** A stroke error or a wrong answer: two heavy clicks. */
+    /** A stroke error or a wrong answer: two low taps, "no". */
     fun error()
-    /** Session complete. */
+    /** Done: a lesson finished, a sentence saved, a session complete. */
     fun success()
 }
 
@@ -29,56 +31,77 @@ object NoHaptics : Haptics {
     override fun success() = Unit
 }
 
+/**
+ * Plays haptics from composed vibration primitives where the actuator has them (Android 11+),
+ * falling back to predefined effects, then short pulses. Uses touch usage so the system
+ * "touch feedback" setting applies, and Ren's own Haptics switch on top.
+ */
 class VibratorHaptics(context: Context, private val enabled: () -> Boolean) : Haptics {
+    private enum class Kind { TICK, CLICK, ERROR, SUCCESS }
+
+    private val app = context.applicationContext
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= 31) {
-        context.getSystemService(VibratorManager::class.java)?.defaultVibrator
+        app.getSystemService(VibratorManager::class.java)?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
-        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        app.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+    private val effects = HashMap<Kind, VibrationEffect?>()
 
-    private val primitives: Boolean = Build.VERSION.SDK_INT >= 30 && vibrator?.areAllPrimitivesSupported(
-        VibrationEffect.Composition.PRIMITIVE_TICK,
-        VibrationEffect.Composition.PRIMITIVE_CLICK,
-    ) == true
+    override fun tick() = play(Kind.TICK)
+    override fun click() = play(Kind.CLICK)
+    override fun error() = play(Kind.ERROR)
+    override fun success() = play(Kind.SUCCESS)
 
-    private fun play(effect: () -> VibrationEffect) {
+    private fun play(kind: Kind) {
         val v = vibrator ?: return
-        if (!enabled() || !v.hasVibrator()) return
-        runCatching { v.vibrate(effect()) }
+        if (!enabled() || !v.hasVibrator() || !systemTouchFeedbackOn()) return
+        val effect = effects.getOrPut(kind) { build(kind, v) } ?: return
+        runCatching {
+            if (Build.VERSION.SDK_INT >= 33) v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
+            else @Suppress("DEPRECATION") v.vibrate(effect)
+        }
     }
 
-    override fun tick() = play {
-        if (primitives && Build.VERSION.SDK_INT >= 30) {
-            VibrationEffect.startComposition().addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.7f).compose()
-        } else if (Build.VERSION.SDK_INT >= 29) VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
-        else VibrationEffect.createOneShot(8, 60)
+    // From Android 13 the touch usage makes the system apply the setting itself.
+    private fun systemTouchFeedbackOn(): Boolean = Build.VERSION.SDK_INT >= 33 ||
+        Settings.System.getInt(app.contentResolver, Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0
+
+    private fun build(kind: Kind, v: Vibrator): VibrationEffect? {
+        if (Build.VERSION.SDK_INT >= 30) composed(kind, v)?.let { return it }
+        if (Build.VERSION.SDK_INT >= 29) {
+            return VibrationEffect.createPredefined(
+                when (kind) {
+                    Kind.TICK -> VibrationEffect.EFFECT_TICK
+                    Kind.CLICK -> VibrationEffect.EFFECT_CLICK
+                    Kind.ERROR, Kind.SUCCESS -> VibrationEffect.EFFECT_DOUBLE_CLICK
+                },
+            )
+        }
+        return when (kind) {
+            Kind.TICK -> VibrationEffect.createOneShot(8, 90)
+            Kind.CLICK -> VibrationEffect.createOneShot(14, 160)
+            Kind.ERROR -> VibrationEffect.createWaveform(longArrayOf(0, 16, 80, 16), intArrayOf(0, 200, 0, 200), -1)
+            Kind.SUCCESS -> VibrationEffect.createWaveform(longArrayOf(0, 14, 90, 18), intArrayOf(0, 170, 0, 230), -1)
+        }
     }
 
-    override fun click() = play {
-        if (primitives && Build.VERSION.SDK_INT >= 30) {
-            VibrationEffect.startComposition().addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 0.8f).compose()
-        } else if (Build.VERSION.SDK_INT >= 29) VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
-        else VibrationEffect.createOneShot(14, 120)
-    }
-
-    override fun error() = play {
-        if (primitives && Build.VERSION.SDK_INT >= 30) {
-            VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1f)
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1f, 90)
-                .compose()
-        } else VibrationEffect.createWaveform(longArrayOf(0, 22, 90, 22), intArrayOf(0, 255, 0, 255), -1)
-    }
-
-    override fun success() = play {
-        if (primitives && Build.VERSION.SDK_INT >= 30) {
-            VibrationEffect.startComposition()
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.5f)
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_TICK, 0.7f, 60)
-                .addPrimitive(VibrationEffect.Composition.PRIMITIVE_CLICK, 1f, 60)
-                .compose()
-        } else VibrationEffect.createWaveform(longArrayOf(0, 10, 60, 10, 60, 20), -1)
+    private fun composed(kind: Kind, v: Vibrator): VibrationEffect? {
+        if (Build.VERSION.SDK_INT < 30) return null
+        val click = VibrationEffect.Composition.PRIMITIVE_CLICK
+        val tick = VibrationEffect.Composition.PRIMITIVE_TICK
+        val lowTick = if (Build.VERSION.SDK_INT >= 31) VibrationEffect.Composition.PRIMITIVE_LOW_TICK else tick
+        // (primitive, scale, delay ms)
+        val steps = when (kind) {
+            Kind.TICK -> listOf(Triple(tick, 0.5f, 0))
+            Kind.CLICK -> listOf(Triple(click, 0.65f, 0))
+            Kind.ERROR -> listOf(Triple(lowTick, 0.9f, 0), Triple(lowTick, 0.9f, 100))
+            Kind.SUCCESS -> listOf(Triple(click, 0.7f, 0), Triple(click, 1f, 110))
+        }
+        if (!v.areAllPrimitivesSupported(*steps.map { it.first }.distinct().toIntArray())) return null
+        val c = VibrationEffect.startComposition()
+        for ((p, scale, delay) in steps) c.addPrimitive(p, scale, delay)
+        return c.compose()
     }
 }
 

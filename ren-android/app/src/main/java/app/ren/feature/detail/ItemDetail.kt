@@ -183,10 +183,10 @@ fun ItemDetailScreen(state: ItemDetailUiState, onBack: () -> Unit, onIntent: (It
                     } else if (vocab != null) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
-                                RubyWord(vocab.text, vocab.reading, Ren.type.largeTitle.jp(if (vocab.text.length > 5) 30.sp else 40.sp, FontWeight.Bold), rubyStyle = Ren.type.furigana.copy(fontSize = 13.sp))
+                                RubyWord(vocab.text, vocab.reading, Ren.type.title1.jp(if (vocab.text.length > 5) 24.sp else 32.sp, FontWeight.SemiBold), rubyStyle = Ren.type.furigana.copy(fontSize = 11.sp))
                                 Txt(vocab.meaning, Ren.type.body, color = c.ink2)
                             }
-                            SpeakerButton(size = 52.dp) { onIntent(ItemDetailIntent.Speak(vocab.reading, vocab.audioAssetPath)) }
+                            SpeakerButton(size = 38.dp) { onIntent(ItemDetailIntent.Speak(vocab.reading, vocab.audioAssetPath)) }
                         }
                     }
                     VSpace(14.dp)
@@ -235,7 +235,7 @@ fun ItemDetailScreen(state: ItemDetailUiState, onBack: () -> Unit, onIntent: (It
                                 val m = state.cards[k.id]?.mastery ?: Mastery.Locked
                                 Column(
                                     Modifier.width(64.dp).pressable { onIntent(ItemDetailIntent.Open(k.id)) }.clip(RoundedCornerShape(13.dp))
-                                        .background(if (m == Mastery.Locked) c.surface else c.soft(c.bamboo)).padding(vertical = 8.dp),
+                                        .background(if (m == Mastery.Locked) c.group else c.soft(c.bamboo)).padding(vertical = 8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
                                     Txt(k.character, Ren.type.title2.copy(fontWeight = FontWeight.Normal), color = if (m == Mastery.Locked) c.ink2 else c.ink)
@@ -253,7 +253,7 @@ fun ItemDetailScreen(state: ItemDetailUiState, onBack: () -> Unit, onIntent: (It
                         Txt(k.mnemonic, Ren.type.body, color = c.ink2)
                         VSpace(10.dp)
                         Row(Modifier.pressable { onIntent(ItemDetailIntent.Speak(k.exampleWord)) }, verticalAlignment = Alignment.CenterVertically) {
-                            Txt(k.exampleWord, Ren.type.title3.jp(22.sp, FontWeight.Medium))
+                            Txt(k.exampleWord, Ren.type.title3.jp(19.sp, FontWeight.Medium))
                             HSpace(10.dp)
                             Txt(k.exampleMeaning, Ren.type.callout, color = c.ink2)
                         }
@@ -278,7 +278,7 @@ fun ItemDetailScreen(state: ItemDetailUiState, onBack: () -> Unit, onIntent: (It
                     item {
                         SectionHeader("Example", Modifier.padding(horizontal = 16.dp))
                         Card(Modifier.padding(horizontal = 16.dp).pressable { onIntent(ItemDetailIntent.Speak(RubyMarkup.reading(v.exampleJp))) }) {
-                            RubySentence(v.exampleJp, Ren.type.body.jp(20.sp))
+                            RubySentence(v.exampleJp, Ren.type.readJp.copy(fontSize = 18.sp))
                             VSpace(4.dp)
                             Txt(v.exampleEn, Ren.type.footnote, color = c.ink2)
                         }
@@ -314,7 +314,7 @@ private fun WordList(words: List<Vocab>, state: ItemDetailUiState, onIntent: (It
             row(onClick = { onIntent(ItemDetailIntent.Open(w.id)) }) {
                 Column(Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.Bottom) {
-                        Txt(w.text, Ren.type.body.jp(20.sp, FontWeight.Medium))
+                        Txt(w.text, Ren.type.body.jp(17.sp, FontWeight.Medium))
                         HSpace(8.dp)
                         Txt(w.reading, Ren.type.callout, color = c.ink2)
                     }
@@ -345,7 +345,7 @@ private fun StrokeOrder(strokes: List<String>) {
         progress.animateTo(strokes.size.toFloat(), tween(380 * strokes.size, easing = LinearEasing))
     }
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Box(Modifier.size(170.dp).clip(RoundedCornerShape(16.dp)).background(c.washi)) {
+        Box(Modifier.size(140.dp).clip(RoundedCornerShape(14.dp)).background(c.washi)) {
             StrokeGlyph(paths, Modifier.fillMaxSize(), colorOf = { c.ink3.copy(alpha = 0.5f) }, width = 5f)
             StrokeGlyph(paths, Modifier.fillMaxSize(), colorOf = { c.ink }, revealOf = { i -> (progress.value - i).coerceIn(0f, 1f) })
         }

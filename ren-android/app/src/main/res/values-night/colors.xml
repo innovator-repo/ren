@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="canvas">#FF000000</color>
+    <color name="canvas">#FF1C1C1E</color>
     <color name="surface">#FF1C1C1E</color>
     <color name="akane">#FFFF453A</color>
     <color name="ink">#FFF5F5F7</color>

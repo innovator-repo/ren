@@ -84,8 +84,8 @@ object UnitPresenter {
 @Composable
 fun RowScope.UnitRowContent(ui: UnitUi) {
     val c = Ren.colors
-    GlyphTile(ui.glyph, size = 52.dp, color = if (ui.type == UnitType.COLLOCATION) c.akane else c.ink)
-    HSpace(14.dp)
+    GlyphTile(ui.glyph, size = 38.dp, color = if (ui.type == UnitType.COLLOCATION) c.akane else c.ink)
+    HSpace(12.dp)
     Column(Modifier.weight(1f)) {
         Txt(ui.title, Ren.type.headline, maxLines = 1)
         if (ui.parts.isNotEmpty()) {
@@ -96,9 +96,9 @@ fun RowScope.UnitRowContent(ui: UnitUi) {
                     append(" ${p.meaning}")
                 }
             }
-            Txt(line, Ren.type.callout, color = c.ink2, maxLines = 1)
+            Txt(line, Ren.type.footnote, color = c.ink2, maxLines = 1)
         } else if (ui.subtitle != null) {
-            Txt(ui.subtitle, Ren.type.callout, color = c.ink2, maxLines = 1)
+            Txt(ui.subtitle, Ren.type.footnote, color = c.ink2, maxLines = 1)
         }
     }
     HSpace(8.dp)
@@ -106,7 +106,7 @@ fun RowScope.UnitRowContent(ui: UnitUi) {
 }
 
 @Composable
-fun DoneCheck(size: Dp = 26.dp) {
+fun DoneCheck(size: Dp = 20.dp) {
     val c = Ren.colors
     Box(Modifier.size(size).clip(CircleShape).background(c.bamboo), contentAlignment = Alignment.Center) {
         RenIcon(RenIcons.Check, c.onAccent, size = size * 0.6f)

@@ -51,6 +51,7 @@ import app.ren.core.designsystem.components.GlyphTile
 import app.ren.core.designsystem.components.HSpace
 import app.ren.core.designsystem.components.LargeTitleScaffold
 import app.ren.core.designsystem.components.Tag
+import app.ren.core.designsystem.components.ToolButton
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.pressable
 import app.ren.core.designsystem.icons.RenIcons
@@ -90,9 +91,7 @@ fun MatrixScreen(state: MatrixUiState, bottomInset: Dp, onIntent: (MatrixIntent)
         subtitle = if (lit == 0) "Nothing lit yet" else "$lit kanji lit",
         bottomInset = bottomInset,
         trailing = {
-            CircleIconButton(RenIcons.Sliders, "Settings", background = c.surface, tint = c.akane, size = 36.dp, iconSize = 20.dp) {
-                onIntent(MatrixIntent.OpenSettings)
-            }
+            ToolButton(RenIcons.Sliders, "Settings") { onIntent(MatrixIntent.OpenSettings) }
         },
     ) {
         item(key = "graph") {
@@ -140,10 +139,10 @@ private fun InfoCard(node: GraphNode, modifier: Modifier, onOpen: () -> Unit) {
     val c = Ren.colors
     Card(modifier.pressable(onClick = onOpen), padding = PaddingValues(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            GlyphTile(node.glyph, size = 56.dp, color = if (node.kind == NodeKind.RADICAL) c.radical else c.ink)
+            GlyphTile(node.glyph, size = 42.dp, color = if (node.kind == NodeKind.RADICAL) c.radical else c.ink)
             HSpace(14.dp)
             Column(Modifier.weight(1f)) {
-                Txt(node.meaning, Ren.type.headline.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold), maxLines = 1)
+                Txt(node.meaning, Ren.type.title3, maxLines = 1)
                 Txt(node.equation, Ren.type.callout, color = c.ink2, maxLines = 1)
                 if (node.words.isNotEmpty()) {
                     Txt(node.words.joinToString("・") { it.text }, Ren.type.footnote, color = c.ink2, maxLines = 1)

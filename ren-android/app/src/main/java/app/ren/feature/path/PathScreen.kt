@@ -50,6 +50,7 @@ import app.ren.core.designsystem.components.PrimaryButton
 import app.ren.core.designsystem.components.ProgressBar
 import app.ren.core.designsystem.components.SectionHeader
 import app.ren.core.designsystem.components.Tag
+import app.ren.core.designsystem.components.ToolButton
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.VSpace
 import app.ren.core.designsystem.components.NavBarHeight
@@ -87,9 +88,7 @@ fun PathScreen(state: PathUiState, bottomInset: Dp, onIntent: (PathIntent) -> Un
         subtitle = "Day ${state.day} of your path",
         bottomInset = bottomInset,
         trailing = {
-            CircleIconButton(RenIcons.Sliders, "Settings", background = c.surface, tint = c.akane, size = 36.dp, iconSize = 20.dp) {
-                onIntent(PathIntent.OpenSettings)
-            }
+            ToolButton(RenIcons.Sliders, "Settings") { onIntent(PathIntent.OpenSettings) }
         },
     ) {
         state.stages.forEachIndexed { i, stage ->
@@ -111,7 +110,7 @@ private fun StageRow(stage: StageUi, isFirst: Boolean, isLast: Boolean, prevDone
     val c = Ren.colors
     Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).padding(horizontal = 16.dp)) {
         // Timeline rail: line above the node, the node, then the line down to the next stage.
-        Box(Modifier.width(48.dp).fillMaxHeight()) {
+        Box(Modifier.width(40.dp).fillMaxHeight()) {
             val doneLine = stage.status == StageStatus.Done
             Canvas(Modifier.fillMaxSize()) {
                 val x = size.width / 2
@@ -131,18 +130,18 @@ private fun StageRow(stage: StageUi, isFirst: Boolean, isLast: Boolean, prevDone
                 .weight(1f)
                 .padding(start = 8.dp, top = 10.dp, bottom = 10.dp)
                 .pressable(enabled = !locked) { onIntent(PathIntent.OpenStage(stage.stage.index)) }
-                .clip(RoundedCornerShape(18.dp))
-                .then(if (locked) Modifier.border(0.5.dp, c.hairline, RoundedCornerShape(18.dp)) else Modifier.background(c.surface))
+                .clip(RoundedCornerShape(14.dp))
+                .then(if (locked) Modifier.border(0.5.dp, c.hairline, RoundedCornerShape(14.dp)) else Modifier.background(c.group))
                 .padding(18.dp),
         ) {
             Row(verticalAlignment = Alignment.Top) {
-                Txt(stage.stage.title, Ren.type.title3.copy(fontWeight = FontWeight.Bold), modifier = Modifier.weight(1f))
+                Txt(stage.stage.title, Ren.type.title3, modifier = Modifier.weight(1f))
                 stage.stage.badge?.let { Tag(it, if (locked) c.ink2 else c.bamboo, Modifier.padding(start = 8.dp)) }
             }
             VSpace(6.dp)
             Txt(
                 if (locked) stage.stage.description else "${stage.stage.window}. ${stage.stage.description}",
-                Ren.type.callout.copy(fontSize = 16.sp, lineHeight = 22.sp), color = c.ink2,
+                Ren.type.footnote, color = c.ink2,
             )
             val p = stage.progress
             if (stage.status == StageStatus.Current || stage.status == StageStatus.Open) {
@@ -172,21 +171,21 @@ private fun StageRow(stage: StageUi, isFirst: Boolean, isLast: Boolean, prevDone
 private fun StageNode(stage: StageUi) {
     val c = Ren.colors
     when (stage.status) {
-        StageStatus.Done -> Box(Modifier.size(34.dp).clip(CircleShape).background(c.bamboo), Alignment.Center) {
-            RenIcon(RenIcons.Check, c.onAccent, size = 18.dp)
+        StageStatus.Done -> Box(Modifier.size(26.dp).clip(CircleShape).background(c.bamboo), Alignment.Center) {
+            RenIcon(RenIcons.Check, c.onAccent, size = 14.dp)
         }
         StageStatus.Current -> Box(
-            Modifier.size(44.dp).clip(CircleShape).background(c.soft(c.akane, 0.2f)), Alignment.Center,
+            Modifier.size(34.dp).clip(CircleShape).background(c.soft(c.akane, 0.2f)), Alignment.Center,
         ) {
-            Box(Modifier.size(34.dp).clip(CircleShape).background(c.akane), Alignment.Center) {
+            Box(Modifier.size(26.dp).clip(CircleShape).background(c.akane), Alignment.Center) {
                 Txt("${stage.stage.index + 1}", Ren.type.subhead.copy(fontWeight = FontWeight.Bold), color = c.onAccent)
             }
         }
-        StageStatus.Open -> Box(Modifier.size(34.dp).clip(CircleShape).background(c.surface).border(2.dp, c.akane, CircleShape), Alignment.Center) {
+        StageStatus.Open -> Box(Modifier.size(26.dp).clip(CircleShape).background(c.canvas).border(2.dp, c.akane, CircleShape), Alignment.Center) {
             Txt("${stage.stage.index + 1}", Ren.type.subhead.copy(fontWeight = FontWeight.Bold), color = c.akane)
         }
-        StageStatus.Locked -> Box(Modifier.size(34.dp).clip(CircleShape).background(c.fill), Alignment.Center) {
-            RenIcon(RenIcons.Lock, c.ink2, size = 17.dp)
+        StageStatus.Locked -> Box(Modifier.size(26.dp).clip(CircleShape).background(c.fill), Alignment.Center) {
+            RenIcon(RenIcons.Lock, c.ink2, size = 13.dp)
         }
     }
 }
@@ -256,15 +255,15 @@ fun StageDetailScreen(state: StageDetailUiState, onBack: () -> Unit, onIntent: (
                 ) {
                     state.tiles.forEach { t ->
                         val (bg, fg) = when (t.mastery) {
-                            Mastery.Locked -> c.surface to c.ink3
+                            Mastery.Locked -> c.group to c.ink3
                             Mastery.New, Mastery.Learning -> c.soft(c.amber) to c.ink
                             Mastery.Mature -> c.soft(c.bamboo) to c.ink
                         }
                         Box(
-                            Modifier.size(52.dp).pressable { onIntent(StageDetailIntent.OpenItem(t.itemId)) }
+                            Modifier.size(44.dp).pressable { onIntent(StageDetailIntent.OpenItem(t.itemId)) }
                                 .clip(RoundedCornerShape(13.dp)).background(bg),
                             Alignment.Center,
-                        ) { Txt(t.glyph, Ren.type.title2.copy(fontWeight = FontWeight.Normal, fontSize = 26.sp), color = fg, maxLines = 1) }
+                        ) { Txt(t.glyph, Ren.type.title2.copy(fontWeight = FontWeight.Normal, fontSize = 22.sp), color = fg, maxLines = 1) }
                     }
                 }
             }

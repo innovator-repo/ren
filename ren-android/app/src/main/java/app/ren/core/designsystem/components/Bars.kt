@@ -1,5 +1,6 @@
 package app.ren.core.designsystem.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -28,17 +29,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.LocalGlassEnabled
 import app.ren.core.designsystem.theme.Ren
-import app.ren.core.designsystem.theme.RenMotion
 import app.ren.core.haptics.LocalHaptics
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -112,12 +112,12 @@ fun LargeTitleScaffold(
             contentPadding = PaddingValues(top = top + 6.dp, bottom = bottomInset + 28.dp),
         ) {
             item(key = "large-title") {
-                Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp)) {
                     Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Txt(subtitle.orEmpty(), Ren.type.callout, color = c.ink2, modifier = Modifier.weight(1f), maxLines = 1)
+                        Txt(subtitle.orEmpty(), Ren.type.footnote, color = c.ink2, modifier = Modifier.weight(1f), maxLines = 1)
                         trailing?.invoke()
                     }
-                    Txt(title, Ren.type.largeTitle, modifier = Modifier.padding(bottom = 10.dp), maxLines = 1)
+                    Txt(title, Ren.type.largeTitle, modifier = Modifier.padding(bottom = 6.dp), maxLines = 1)
                 }
             }
             content()
@@ -152,11 +152,11 @@ fun NavBar(
             if (onBack != null) {
                 Row(
                     Modifier.align(Alignment.CenterStart).pressable(label = "Back", scaleDown = 0.94f, onClick = onBack)
-                        .padding(vertical = 8.dp, horizontal = 4.dp),
+                        .padding(vertical = 10.dp, horizontal = 2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RenIcon(RenIcons.Back, c.akane, size = 22.dp)
-                    if (backLabel != null) Txt(backLabel, Ren.type.body, color = c.akane, maxLines = 1)
+                    RenIcon(RenIcons.Back, c.akane, size = 20.dp)
+                    if (backLabel != null) Txt(backLabel, Ren.type.body.copy(fontSize = 16.sp), color = c.akane, maxLines = 1)
                 }
             }
             Box(Modifier.align(Alignment.Center).widthIn(max = 220.dp)) {
@@ -185,7 +185,7 @@ fun TabBar(items: List<TabItem>, selected: Int, haze: HazeState?, modifier: Modi
         ) {
             items.forEachIndexed { i, item ->
                 val active = i == selected
-                val bounce by animateFloatAsState(if (active) 1f else 0.94f, RenMotion.spring(), label = "tab")
+                val tint by animateColorAsState(if (active) c.akane else c.ink2, tween(160), label = "tab")
                 Column(
                     Modifier
                         .weight(1f)
@@ -196,11 +196,12 @@ fun TabBar(items: List<TabItem>, selected: Int, haze: HazeState?, modifier: Modi
                         .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    RenIcon(item.icon, if (active) c.akane else c.ink2, Modifier.scale(bounce), size = 25.dp)
+                    RenIcon(item.icon, tint, size = 22.dp)
+                    VSpace(2.dp)
                     Txt(
                         item.label,
                         Ren.type.caption2.copy(fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium),
-                        color = if (active) c.akane else c.ink2,
+                        color = tint,
                         maxLines = 1,
                     )
                 }

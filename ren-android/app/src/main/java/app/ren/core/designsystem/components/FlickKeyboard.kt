@@ -152,7 +152,7 @@ fun FlickKeyboard(
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(44.dp)
                 .onGloballyPositioned { keyCoords[key] = it }
                 .keyFace(c.key, pressed = active?.key == key)
                 .semantics { contentDescription = "$label key" }
@@ -190,12 +190,12 @@ fun FlickKeyboard(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            Txt(if (katakana) label.map { out(it) }.joinToString("") else label, Ren.type.body.jp(22.sp, FontWeight.Medium), maxLines = 1)
+            Txt(if (katakana) label.map { out(it) }.joinToString("") else label, Ren.type.body.jp(20.sp, FontWeight.Medium), maxLines = 1)
         }
     }
 
     @Composable
-    fun fnKey(label: String, modifier: Modifier = Modifier, height: Dp = 48.dp, color: Color = c.keyFunction, textColor: Color = c.ink, onTap: () -> Unit, content: (@Composable () -> Unit)? = null) {
+    fun fnKey(label: String, modifier: Modifier = Modifier, height: Dp = 44.dp, color: Color = c.keyFunction, textColor: Color = c.ink, onTap: () -> Unit, content: (@Composable () -> Unit)? = null) {
         Box(
             modifier
                 .fillMaxWidth()
@@ -228,7 +228,7 @@ fun FlickKeyboard(
             Col(Modifier.width(54.dp), gap) {
                 fnKey("Delete", onTap = input::backspace) { RenIcon(RenIcons.Backspace, c.ink, size = 22.dp) }
                 fnKey("空白", onTap = { input.insert(" ") })
-                fnKey(submitLabel, height = 48.dp * 2 + gap, color = c.akane, textColor = c.onAccent, onTap = onSubmit)
+                fnKey(submitLabel, height = 44.dp * 2 + gap, color = c.akane, textColor = c.onAccent, onTap = onSubmit)
             }
         }
 
@@ -304,10 +304,10 @@ fun AnswerField(
     Row(
         modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(52.dp)
             .graphicsLayer { translationX = shake.value }
             .clip(RoundedCornerShape(16.dp))
-            .background(c.surface)
+            .background(c.group)
             .border(2.dp, ring, RoundedCornerShape(16.dp))
             .padding(start = 18.dp, end = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -318,15 +318,15 @@ fun AnswerField(
                 Box(Modifier.width(2.dp).height(28.dp).alpha(caret).background(c.akane))
                 Txt(placeholder, Ren.type.body.jp(20.sp), color = c.ink3, modifier = Modifier.padding(start = 6.dp), maxLines = 1)
             } else {
-                Txt(text.substring(0, input.cursor), Ren.type.body.jp(26.sp, FontWeight.Medium), maxLines = 1)
+                Txt(text.substring(0, input.cursor), Ren.type.body.jp(22.sp, FontWeight.Medium), maxLines = 1)
                 Box(Modifier.padding(horizontal = 1.dp).width(2.dp).height(28.dp).alpha(caret).background(c.akane))
-                Txt(text.substring(input.cursor), Ren.type.body.jp(26.sp, FontWeight.Medium), maxLines = 1)
+                Txt(text.substring(input.cursor), Ren.type.body.jp(22.sp, FontWeight.Medium), maxLines = 1)
             }
         }
         Box(
-            Modifier.size(42.dp).pressable(label = "Check answer", scaleDown = 0.92f, onClick = onSubmit)
+            Modifier.size(36.dp).pressable(label = "Check answer", scaleDown = 0.92f, onClick = onSubmit)
                 .clip(CircleShape).background(c.akane),
             contentAlignment = Alignment.Center,
-        ) { RenIcon(RenIcons.Up, c.onAccent, size = 22.dp) }
+        ) { RenIcon(RenIcons.Up, c.onAccent, size = 18.dp) }
     }
 }

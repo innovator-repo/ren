@@ -71,6 +71,7 @@ import app.ren.core.designsystem.components.SegmentedControl
 import app.ren.core.designsystem.components.SpeakerButton
 import app.ren.core.designsystem.components.Tag
 import app.ren.core.designsystem.components.TextAction
+import app.ren.core.designsystem.components.ToolButton
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.VSpace
 import app.ren.core.designsystem.components.WordLook
@@ -113,9 +114,7 @@ fun LibraryScreen(state: LibraryUiState, bottomInset: Dp, onIntent: (LibraryInte
         subtitle = "Read at your level",
         bottomInset = bottomInset,
         trailing = {
-            CircleIconButton(RenIcons.Sliders, "Settings", background = c.surface, tint = c.akane, size = 36.dp, iconSize = 20.dp) {
-                onIntent(LibraryIntent.OpenSettings)
-            }
+            ToolButton(RenIcons.Sliders, "Settings") { onIntent(LibraryIntent.OpenSettings) }
         },
     ) {
         item(key = "seg") {
@@ -127,9 +126,9 @@ fun LibraryScreen(state: LibraryUiState, bottomInset: Dp, onIntent: (LibraryInte
         if (visible.isNotEmpty()) {
             item(key = "header") { SectionHeader("Matched to you", Modifier.padding(horizontal = 16.dp)) }
             item(key = "list") {
-                GroupedList(Modifier.padding(horizontal = 16.dp)) {
+                GroupedList(Modifier.padding(horizontal = 16.dp), plain = true) {
                     visible.forEach { insight ->
-                        row(inset = 82.dp, enabled = !insight.locked, onClick = { onIntent(LibraryIntent.Open(insight.story.id)) }) {
+                        row(inset = 56.dp, enabled = !insight.locked, onClick = { onIntent(LibraryIntent.Open(insight.story.id)) }) {
                             StoryRow(insight)
                         }
                     }
@@ -145,13 +144,13 @@ private fun RowScope.StoryRow(insight: StoryInsight) {
     val tint = c.tint(insight.story.tint)
     val locked = insight.locked
     GlyphTile(
-        insight.story.iconChar, size = 52.dp,
+        insight.story.iconChar, size = 40.dp,
         background = if (locked) c.fill else c.soft(tint), color = if (locked) c.ink2 else tint,
     )
     HSpace(14.dp)
     Column(Modifier.weight(1f).alpha(if (locked) 0.55f else 1f)) {
         RubySentence(
-            insight.story.title, Ren.type.headline.jp(18.sp, FontWeight.Bold),
+            insight.story.title, Ren.type.headline.jp(16.sp, FontWeight.SemiBold),
             lookOf = { w -> WordLook(showRuby = w.text.any { ch -> ch.toString() in insight.missingKanji }) },
         )
         Txt(insight.story.titleEn, Ren.type.callout, color = c.ink2, maxLines = 1)
@@ -226,7 +225,7 @@ fun StoryScreen(state: StoryUiState, onBack: () -> Unit, onIntent: (StoryIntent)
                         .padding(horizontal = 8.dp, vertical = 10.dp),
                 ) {
                     RubySentence(
-                        s.jp, Ren.type.body.jp(22.sp),
+                        s.jp, Ren.type.readJp,
                         tokenModifier = { i ->
                             Modifier.pointerInput(s.index, i) {
                                 detectTapGestures(
@@ -325,10 +324,10 @@ private fun WordSheet(sheet: WordSheetUi, onIntent: (StoryIntent) -> Unit) {
     Column(Modifier.padding(horizontal = 20.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                RubyWord(sheet.vocab.text, sheet.vocab.reading, Ren.type.title1.jp(34.sp, FontWeight.Bold), rubyStyle = Ren.type.furigana.copy(fontSize = 12.sp))
+                RubyWord(sheet.vocab.text, sheet.vocab.reading, Ren.type.title1.jp(28.sp, FontWeight.SemiBold), rubyStyle = Ren.type.furigana.copy(fontSize = 11.sp))
                 Txt(sheet.vocab.meaning, Ren.type.body, color = c.ink2)
             }
-            SpeakerButton(size = 48.dp) { onIntent(StoryIntent.SpeakWord) }
+            SpeakerButton(size = 38.dp) { onIntent(StoryIntent.SpeakWord) }
         }
         if (sheet.parts.isNotEmpty()) {
             SheetLabel("Built from")
@@ -378,7 +377,7 @@ fun PitchGraph(pitch: PitchUi, modifier: Modifier) {
         for (i in 0 until pts.size - 1) drawLine(c.radical, pts[i], pts[i + 1], 2.dp.toPx())
         pts.forEachIndexed { i, p ->
             if (i == pts.lastIndex) {
-                drawCircle(c.surface, 4.dp.toPx(), p)
+                drawCircle(c.canvas, 4.dp.toPx(), p)
                 drawCircle(c.radical, 4.dp.toPx(), p, style = Stroke(2.dp.toPx()))
             } else drawCircle(c.radical, 4.dp.toPx(), p)
             val label = pitch.morae.getOrNull(i) ?: "は"
@@ -402,10 +401,10 @@ private fun MiningTray(m: MiningUi, modifier: Modifier, onIntent: (StoryIntent) 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Txt("SAVE THIS FRAGMENT", Ren.type.caption2.copy(letterSpacing = 0.6.sp), color = c.ink2)
-                Txt(m.plain, Ren.type.title2.jp(22.sp, FontWeight.Bold), maxLines = 2)
+                Txt(m.plain, Ren.type.title3.jp(19.sp, FontWeight.SemiBold), maxLines = 2)
                 Txt(m.english, Ren.type.footnote, color = c.ink2, maxLines = 2)
             }
-            SpeakerButton(size = 44.dp) { onIntent(StoryIntent.SpeakFragment) }
+            SpeakerButton(size = 34.dp) { onIntent(StoryIntent.SpeakFragment) }
             HSpace(6.dp)
             CircleIconButton(RenIcons.Close, "Cancel", size = 30.dp, iconSize = 14.dp) { onIntent(StoryIntent.CancelMining) }
         }
