@@ -67,7 +67,7 @@ data class SettingsUiState(
     val voice: VoiceStatus = VoiceStatus.Ready,
 )
 
-const val PRIVACY_URL = "https://github.com/bkumar-lgtm/test/blob/ccr-aec1bc7b-ot0hp9/ren-android/PRIVACY.md"
+const val PRIVACY_URL = "https://github.com/Bharat100-cpu/android-apps/blob/clean/ren/ren-android/PRIVACY.md"
 
 sealed interface SettingsIntent {
     data class Update(val transform: (UserPreferences) -> UserPreferences) : SettingsIntent
