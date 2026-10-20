@@ -25,7 +25,10 @@ import app.ren.domain.usecase.Streak
 import app.ren.domain.usecase.StudySnapshotSource
 import app.ren.domain.usecase.epochDay
 import app.ren.widget.WidgetUpdater
+import app.ren.ecosystem.EcoMetrics
+import app.ren.ecosystem.LumeIpc
 import app.ren.work.DeepLinks
+import app.ren.work.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -64,6 +67,8 @@ class SessionViewModel @Inject constructor(
     private var reviewed = 0
     private var correct = 0
     private var studyMs = 0L
+    private var latencyMs = 0L
+    private var dueAtStart = 0
     private val learned = mutableListOf<String>()
     private var lastLesson: LessonUnit? = null
     private val safe = SafeFailure()
@@ -74,9 +79,12 @@ class SessionViewModel @Inject constructor(
             val s = source.snapshot.filterNotNull().first()
             lib = s.library
             val showRomaji = s.prefs.showRomaji && s.pathDay <= Curriculum.ROMAJI_LAST_DAY
+            dueAtStart = s.cards.values.count { it.fsrs.due <= s.now }
+            // Floor mode (a low-energy day, set from Kasane): a five-card round is the whole session.
+            val floor = s.prefs.floorEpochDay == s.today
             val steps = when {
                 lessonUnitId != null -> listOf(SessionStep.Lesson(lessonUnitId))
-                quick -> SessionPlanner.quick(s.cards.values.toList(), s.now, DeepLinks.QUICK_SIZE)
+                quick || floor -> SessionPlanner.quick(s.cards.values.toList(), s.now, DeepLinks.QUICK_SIZE)
                 else -> SessionPlanner.daily(
                     s.cards.values.toList(),
                     CurriculumPlanner.nextUnits(s.units, s.progress, s.summary.newRemaining),
@@ -249,6 +257,7 @@ class SessionViewModel @Inject constructor(
         val updated = FSRSScheduler.schedule(card.fsrs, rating, now)
         val elapsed = (now - shownAt).coerceIn(0, 5 * 60_000L)
         studyMs += elapsed
+        latencyMs += elapsed
         reviewed++
         val recalled = rating != Rating.Again
         if (recalled) correct++
@@ -298,12 +307,26 @@ class SessionViewModel @Inject constructor(
 
     private suspend fun finish() {
         flushStudyTime()
+        if (lessonUnitId == null && (reviewed > 0 || learned.isNotEmpty())) markDone()
         if (reviewed > 0 && lessonUnitId == null) {
             audio.sfx(Sfx.Complete)
             emit(SessionEffect.PlaySuccessHaptic)
         }
         showSummary(lessonOnly = false, canReviewNow = 0)
         WidgetUpdater.refresh(context)
+    }
+
+    /** A full session or quick round is complete: remember it, tell Kasane, and quiet today's reminder. */
+    private fun markDone() {
+        val today = clock.epochDay()
+        val metrics = EcoMetrics.of(reviewed, correct, latencyMs, dueAtStart)
+        appScope.launch {
+            prefs.update { it.copy(renDoneEpochDay = today) }
+            NotificationHelper.cancel(context)
+            LumeIpc.logCheck(context, done = true)
+            LumeIpc.ecoMetrics(context, metrics)
+            WidgetUpdater.refresh(context)
+        }
     }
 
     private suspend fun showSummary(lessonOnly: Boolean, canReviewNow: Int) {

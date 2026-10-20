@@ -2,11 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Lume ecosystem: only apps signed with the same key can send or read these links. -->
+    <permission
+        android:name="app.lume.permission.ECOSYSTEM_SYNC"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="app.lume.permission.ECOSYSTEM_SYNC" />
+
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Android 11+ package visibility: lets TextToSpeech find the installed speech engines. -->
     <queries>
+        <package android:name="app.kasane" />
+        <package android:name="app.katachi" />
+        <package android:name="com.sigil.app" />
+        <package android:name="com.vow.app" />
+        <package android:name="com.duolingo" />
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
@@ -55,6 +66,21 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/ren_widget_info" />
         </receiver>
+
+        <receiver
+            android:name=".ecosystem.FloorModeReceiver"
+            android:exported="true"
+            android:permission="app.lume.permission.ECOSYSTEM_SYNC">
+            <intent-filter>
+                <action android:name="app.lume.action.FLOOR_MODE" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name=".ecosystem.RenStatusProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="true"
+            android:readPermission="app.lume.permission.ECOSYSTEM_SYNC" />
 
         <receiver
             android:name=".work.ReminderActionReceiver"

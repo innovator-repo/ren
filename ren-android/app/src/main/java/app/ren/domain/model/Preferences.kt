@@ -36,4 +36,8 @@ data class UserPreferences(
     @ProtoNumber(19) val studyMsToday: Long = 0,
     @ProtoNumber(20) val longestStreak: Int = 0,
     @ProtoNumber(21) val speechRate: Float = 0.9f,
+    /** Epoch day on which a full session or quick round was last completed; -1 if never. */
+    @ProtoNumber(22) val renDoneEpochDay: Long = -1,
+    /** Epoch day for which the ecosystem asked for "floor mode" (a 5-card round is enough); -1 if off. */
+    @ProtoNumber(23) val floorEpochDay: Long = -1,
 )
