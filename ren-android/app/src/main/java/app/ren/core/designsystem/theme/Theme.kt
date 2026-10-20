@@ -13,11 +13,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.LocaleList
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -25,7 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import app.ren.R
+import app.ren.designsystem.CircadianPhase
+import app.ren.designsystem.Geist
+import app.ren.designsystem.JaLocale
+import app.ren.designsystem.KinsokuLineBreak
+import app.ren.designsystem.LumeColors
 import app.ren.designsystem.LumeMotion
+import app.ren.designsystem.Newsreader
+import app.ren.designsystem.NotoSerifJp
 
 /**
  * Ren's palette: calm neutral pages (paper white, or graphite in dark) with soft grouped fills
@@ -70,6 +74,12 @@ data class RenColors(
         "bamboo" -> bamboo
         else -> ink2
     }
+}
+
+/** Applies the phase's page, group and raised-surface fills; [CircadianPhase.DAY] leaves the palette untouched. */
+fun RenColors.circadian(phase: CircadianPhase): RenColors {
+    val s = LumeColors.surfaces(phase, isDark)
+    return copy(canvas = s.canvas, surface = s.surface, group = s.group)
 }
 
 val LightColors = RenColors(
@@ -120,40 +130,16 @@ val DarkColors = RenColors(
     isDark = true,
 )
 
-/** Interface face, as in Sigil. */
-val Geist = FontFamily(
-    Font(R.font.geist_regular, FontWeight.Normal),
-    Font(R.font.geist_medium, FontWeight.Medium),
-    Font(R.font.geist_semibold, FontWeight.SemiBold),
-    Font(R.font.geist_bold, FontWeight.Bold),
-)
-
-/** Reading face for English prose: mnemonic stories and translations. */
-val Newsreader = FontFamily(
-    Font(R.font.newsreader_regular, FontWeight.Normal),
-    Font(R.font.newsreader_semibold, FontWeight.SemiBold),
-)
-
-/** Reading face for Japanese (Mincho), subset to Ren's own text by tools/fonts/subset_jp.py. */
-val Mincho = FontFamily(
-    Font(R.font.noto_serif_jp_regular, FontWeight.Normal),
-    Font(R.font.noto_serif_jp_semibold, FontWeight.SemiBold),
-)
-
-/** Japanese glyph forms everywhere: without this, Han characters fall back to Chinese shapes on non-JP devices. */
-private val Ja = LocaleList("ja-JP")
-
 private fun style(size: TextUnit, weight: FontWeight, lineHeight: TextUnit, tracking: TextUnit = 0.sp, family: FontFamily = Geist) = TextStyle(
     fontFamily = family,
     fontSize = size,
     fontWeight = weight,
     letterSpacing = tracking,
     lineHeight = lineHeight,
-    localeList = Ja,
+    localeList = JaLocale,
     platformStyle = PlatformTextStyle(includeFontPadding = false),
     lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
-    // Keep Japanese words whole (コーヒー never splits) and honour kinsoku rules.
-    lineBreak = LineBreak(LineBreak.Strategy.HighQuality, LineBreak.Strictness.Strict, LineBreak.WordBreak.Phrase),
+    lineBreak = KinsokuLineBreak,
 )
 
 /** A compact scale, close to Sigil's: text that reads easily without shouting. */
@@ -180,10 +166,15 @@ data class RenTypography(
     /** English prose to be read, not scanned. */
     val read: TextStyle = style(17.sp, FontWeight.Normal, 25.sp, family = Newsreader),
     /** Japanese prose in the Reader and example sentences. */
-    val readJp: TextStyle = style(19.sp, FontWeight.Normal, 30.sp, family = Mincho),
+    val readJp: TextStyle = style(19.sp, FontWeight.Normal, 30.sp, family = NotoSerifJp),
 )
 
+/** Japanese text to be read (kanji, vocabulary, stories): the Noto Serif JP voice. */
 fun TextStyle.jp(size: TextUnit, weight: FontWeight = FontWeight.Normal) =
+    copy(fontSize = size, fontWeight = weight, lineHeight = size * 1.3f, letterSpacing = 0.sp, fontFamily = NotoSerifJp)
+
+/** Japanese kana in interface chrome (keyboard keys, the answer field): the sans face with Japanese forms. */
+fun TextStyle.jpUi(size: TextUnit, weight: FontWeight = FontWeight.Normal) =
     copy(fontSize = size, fontWeight = weight, lineHeight = size * 1.3f, letterSpacing = 0.sp)
 
 object RenMotion {
@@ -212,8 +203,13 @@ object Ren {
 }
 
 @Composable
-fun RenTheme(dark: Boolean = isSystemInDarkTheme(), glass: Boolean = true, content: @Composable () -> Unit) {
-    val colors = if (dark) DarkColors else LightColors
+fun RenTheme(
+    dark: Boolean = isSystemInDarkTheme(),
+    glass: Boolean = true,
+    phase: CircadianPhase = CircadianPhase.DAY,
+    content: @Composable () -> Unit,
+) {
+    val colors = (if (dark) DarkColors else LightColors).circadian(phase)
     CompositionLocalProvider(
         LocalRenColors provides colors,
         LocalRenTypography provides RenTypography(),

@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.sp
 import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
-import app.ren.core.designsystem.theme.jp
+import app.ren.core.designsystem.theme.jpUi
 import app.ren.designsystem.LocalHaptics
 import app.ren.domain.model.Japanese
 import kotlin.math.abs
@@ -191,7 +191,7 @@ fun FlickKeyboard(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            Txt(if (katakana) label.map { out(it) }.joinToString("") else label, Ren.type.body.jp(20.sp, FontWeight.Medium), maxLines = 1)
+            Txt(if (katakana) label.map { out(it) }.joinToString("") else label, Ren.type.body.jpUi(20.sp, FontWeight.Medium), maxLines = 1)
         }
     }
 
@@ -218,7 +218,7 @@ fun FlickKeyboard(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
             Col(Modifier.width(54.dp), gap) {
-                fnKey("ー", onTap = { input.insert("ー") }) { Txt("ー", Ren.type.body.jp(20.sp)) }
+                fnKey("ー", onTap = { input.insert("ー") }) { Txt("ー", Ren.type.body.jpUi(20.sp)) }
                 fnKey("Move left", onTap = input::left) { RenIcon(RenIcons.Back, c.ink, size = 20.dp) }
                 fnKey("Move right", onTap = input::right) { RenIcon(RenIcons.Chevron, c.ink, size = 20.dp) }
                 fnKey(if (katakana) "カナ" else "かな", onTap = { katakana = !katakana })
@@ -264,7 +264,7 @@ fun FlickKeyboard(
                         .border(0.5.dp, c.hairline, RoundedCornerShape(9.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Txt(out(ch), Ren.type.body.jp(24.sp, FontWeight.Medium), color = if (on) c.onAccent else c.ink)
+                    Txt(out(ch), Ren.type.body.jpUi(24.sp, FontWeight.Medium), color = if (on) c.onAccent else c.ink)
                 }
             }
         }
@@ -317,11 +317,11 @@ fun AnswerField(
             val text = input.text
             if (text.isEmpty()) {
                 Box(Modifier.width(2.dp).height(28.dp).alpha(caret).background(c.akane))
-                Txt(placeholder, Ren.type.body.jp(20.sp), color = c.ink3, modifier = Modifier.padding(start = 6.dp), maxLines = 1)
+                Txt(placeholder, Ren.type.body.jpUi(20.sp), color = c.ink3, modifier = Modifier.padding(start = 6.dp), maxLines = 1)
             } else {
-                Txt(text.substring(0, input.cursor), Ren.type.body.jp(22.sp, FontWeight.Medium), maxLines = 1)
+                Txt(text.substring(0, input.cursor), Ren.type.body.jpUi(22.sp, FontWeight.Medium), maxLines = 1)
                 Box(Modifier.padding(horizontal = 1.dp).width(2.dp).height(28.dp).alpha(caret).background(c.akane))
-                Txt(text.substring(input.cursor), Ren.type.body.jp(22.sp, FontWeight.Medium), maxLines = 1)
+                Txt(text.substring(input.cursor), Ren.type.body.jpUi(22.sp, FontWeight.Medium), maxLines = 1)
             }
         }
         Box(

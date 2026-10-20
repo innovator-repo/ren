@@ -10,6 +10,11 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import app.ren.designsystem.CircadianPhase
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +65,9 @@ class MainActivity : ComponentActivity() {
             }
             val hapticsOn by rememberUpdatedState(loaded.hapticsEnabled)
             val haptics = rememberHaptics { hapticsOn }
-            RenTheme(dark = dark) {
+            var phase by remember { mutableStateOf(CircadianPhase.now()) }
+            LaunchedEffect(Unit) { while (true) { delay(5 * 60_000L); phase = CircadianPhase.now() } }
+            RenTheme(dark = dark, phase = phase) {
                 CompositionLocalProvider(LocalHaptics provides haptics) {
                     RenApp(onboarded = loaded.onboarded, deepLinks = deepLinks.receiveAsFlow())
                 }

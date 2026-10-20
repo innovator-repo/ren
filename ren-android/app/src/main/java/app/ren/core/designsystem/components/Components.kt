@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
+import app.ren.core.designsystem.theme.jp
 import app.ren.core.designsystem.theme.RenMotion
 import app.ren.core.designsystem.theme.RenShapes
 import app.ren.designsystem.LocalHaptics
@@ -318,7 +319,7 @@ fun GlyphTile(
         modifier.size(size).clip(RoundedCornerShape(size * 0.27f)).background(background),
         contentAlignment = Alignment.Center,
     ) {
-        Txt(glyph, Ren.type.body.copy(fontSize = (size.value * 0.52f).sp, lineHeight = (size.value * 0.6f).sp), color = color, maxLines = 1)
+        Txt(glyph, Ren.type.body.jp((size.value * 0.52f).sp).copy(lineHeight = (size.value * 0.6f).sp), color = color, maxLines = 1)
     }
 }
 
