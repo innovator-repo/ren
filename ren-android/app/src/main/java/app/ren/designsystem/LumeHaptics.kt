@@ -99,6 +99,7 @@ class VibratorHaptics(context: Context, private val enabled: () -> Boolean) : Lu
     /** One primitive of a composition: (primitive, scale, delay in ms before it). */
     private data class Step(val primitive: Int, val scale: Float, val delayMs: Int)
 
+    @android.annotation.SuppressLint("WrongConstant")
     private fun composed(token: HapticToken, v: Vibrator): VibrationEffect? {
         if (Build.VERSION.SDK_INT < 30) return null
         
