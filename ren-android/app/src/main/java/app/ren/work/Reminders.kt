@@ -24,27 +24,72 @@ import androidx.work.WorkerParameters
 import app.ren.MainActivity
 import app.ren.R
 import app.ren.data.local.StudyDao
+import app.ren.domain.repository.PreferencesRepository
+import app.ren.ecosystem.LumeIpc
+import app.ren.ecosystem.RenStatus
 import app.ren.widget.WidgetUpdater
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-/** Spec §10: once a day, if anything is due, one gentle notification that opens the review queue. */
+/** What a reminder says; varies with the day's state so it never reads like the same alarm twice. */
+data class ReminderText(val title: String, val body: String, val offerQuick: Boolean, val quickFirst: Boolean)
+
+object ReminderCopy {
+    /** From this hour a five-card round is offered first: small enough to never skip a day. */
+    const val LATE_HOUR = 21
+
+    fun build(due: Int, retention: Int, streak: Int, hour: Int): ReminderText {
+        val late = hour >= LATE_HOUR
+        val cards = if (due == 1) "1 card" else "$due cards"
+        val title = when {
+            late -> "Five cards save today"
+            streak >= 3 -> "$streak days in a row"
+            else -> "$cards ready in Ren"
+        }
+        val body = when {
+            late -> "$cards due at $retention% retention. A 2-minute round of ${DeepLinks.QUICK_SIZE} keeps the habit alive."
+            streak >= 3 -> "$cards due at $retention% retention. A short session keeps your streak going."
+            else -> "$cards due at $retention% retention. About ${(due / 6).coerceIn(2, 10)} minutes."
+        }
+        return ReminderText(title, body, offerQuick = late || due > DeepLinks.QUICK_SIZE, quickFirst = late)
+    }
+}
+
+/**
+ * Spec §10: once a day, if anything is due, one gentle notification that opens the review queue.
+ * Stays quiet when Kasane (which orchestrates reminders for the suite) is installed, or when
+ * today's session is already done.
+ */
 @HiltWorker
 class ReviewReminderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val studyDao: StudyDao,
+    private val prefs: PreferencesRepository,
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val due = studyDao.getDueCards(System.currentTimeMillis()).first().size
-        if (due > 0) NotificationHelper.showReviewReminder(
-            applicationContext, "Reviews are waiting", "You have $due Japanese items ready to review today.",
-        )
+        val now = System.currentTimeMillis()
+        val today = LocalDate.now().toEpochDay()
+        val status = RenStatus.compute(studyDao.observeCards().first(), prefs.current(), now, today)
+        val quiet = status.doneToday || LumeIpc.kasaneInstalled(applicationContext)
+        if (!quiet && status.due > 0) {
+            val text = ReminderCopy.build(status.due, status.retention, status.streak, LocalTime.now().hour)
+            NotificationHelper.showReviewReminder(applicationContext, text)
+        }
+        WidgetUpdater.refresh(applicationContext)
+        return Result.success()
+    }
+}
+
+/** Refreshes the widget so its late-evening amber tint appears at 21:00 and clears at midnight. */
+class WidgetRefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
         WidgetUpdater.refresh(applicationContext)
         return Result.success()
     }
@@ -61,7 +106,7 @@ object NotificationHelper {
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
-    fun showReviewReminder(context: Context, title: String, body: String) {
+    fun showReviewReminder(context: Context, text: ReminderText) {
         if (Build.VERSION.SDK_INT >= 33 &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) return
@@ -69,21 +114,29 @@ object NotificationHelper {
         val open = PendingIntent.getActivity(
             context, 1, DeepLinks.sessionIntent(context, quick = false), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
+        val quick = PendingIntent.getActivity(
+            context, 3, DeepLinks.sessionIntent(context, quick = true), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
         val later = PendingIntent.getBroadcast(
             context, 2, Intent(context, ReminderActionReceiver::class.java).setAction(ReminderActionReceiver.ACTION_LATER),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
-        val notification = NotificationCompat.Builder(context, CHANNEL)
+        val builder = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
             .setColor(ContextCompat.getColor(context, R.color.akane))
-            .setContentTitle(title)
-            .setContentText(body)
-            .setContentIntent(open)
+            .setContentTitle(text.title)
+            .setContentText(text.body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text.body))
+            .setContentIntent(if (text.quickFirst) quick else open)
             .setAutoCancel(true)
-            .addAction(0, "Start session", open)
-            .addAction(0, "Later", later)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .build()
+        if (text.quickFirst) {
+            builder.addAction(0, "Quick round (${DeepLinks.QUICK_SIZE})", quick).addAction(0, "Full session", open)
+        } else {
+            builder.addAction(0, "Start session", open)
+            if (text.offerQuick) builder.addAction(0, "Quick round (${DeepLinks.QUICK_SIZE})", quick)
+        }
+        val notification = builder.addAction(0, "Later", later).build()
         runCatching { NotificationManagerCompat.from(context).notify(ID, notification) }
     }
 
@@ -120,6 +173,20 @@ object ReminderScheduler {
             .setInitialDelay(Duration.between(now, next).toMillis(), TimeUnit.MILLISECONDS)
             .build()
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, request)
+    }
+
+    /** Daily widget refreshes at 21:00 (amber tint if undone) and 00:00 (clear it). */
+    fun scheduleWidgetTint(context: Context) {
+        val wm = WorkManager.getInstance(context)
+        for ((name, hour) in listOf("widget-tint-on" to 21, "widget-tint-off" to 0)) {
+            val now = LocalDateTime.now()
+            var next = now.with(LocalTime.of(hour, 0))
+            if (!next.isAfter(now)) next = next.plusDays(1)
+            val request = PeriodicWorkRequestBuilder<WidgetRefreshWorker>(1, TimeUnit.DAYS)
+                .setInitialDelay(Duration.between(now, next).toMillis(), TimeUnit.MILLISECONDS)
+                .build()
+            wm.enqueueUniquePeriodicWork(name, ExistingPeriodicWorkPolicy.KEEP, request)
+        }
     }
 }
 

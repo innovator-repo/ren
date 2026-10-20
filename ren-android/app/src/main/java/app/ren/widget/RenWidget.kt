@@ -38,10 +38,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import app.ren.R
 import app.ren.data.local.StudyDao
-import app.ren.domain.fsrs.CardState
-import app.ren.domain.fsrs.FSRSScheduler
+import app.ren.ecosystem.RenStatus
 import app.ren.domain.repository.PreferencesRepository
-import app.ren.domain.usecase.Streak
 import app.ren.work.DeepLinks
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -53,7 +51,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import kotlin.math.roundToInt
+import java.time.LocalTime
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -62,7 +60,11 @@ interface WidgetEntryPoint {
     fun preferences(): PreferencesRepository
 }
 
-private data class WidgetData(val due: Int, val retention: Int, val streak: Int)
+/** [late]: past 21:00 with today's session still undone, so the card turns amber. */
+private data class WidgetData(val due: Int, val retention: Int, val streak: Int, val late: Boolean)
+
+/** From this hour on, an undone day tints the widget amber. */
+internal const val LATE_HOUR = 21
 
 /** Home-screen widget (design: "Outside the app"): retention ring, due count, streak, quick session. */
 class RenWidget : GlanceAppWidget() {
@@ -75,14 +77,8 @@ class RenWidget : GlanceAppWidget() {
     private suspend fun load(context: Context): WidgetData {
         val entry = EntryPointAccessors.fromApplication(context.applicationContext, WidgetEntryPoint::class.java)
         val now = System.currentTimeMillis()
-        val cards = entry.studyDao().observeCards().first()
-        val due = cards.count { it.dueTimestamp <= now }
-        val reviewed = cards.filter { it.state == CardState.Review.value }
-        val retention = if (reviewed.isEmpty()) 100 else (reviewed.map {
-            FSRSScheduler.calculateRetrievability((now - it.lastReviewTimestamp).toDouble() / FSRSScheduler.DAY_MS, it.stability)
-        }.average() * 100).roundToInt()
-        val prefs = entry.preferences().current()
-        return WidgetData(due, retention, Streak.current(prefs, LocalDate.now().toEpochDay()))
+        val status = RenStatus.compute(entry.studyDao().observeCards().first(), entry.preferences().current(), now, LocalDate.now().toEpochDay())
+        return WidgetData(status.due, status.retention, status.streak, late = LocalTime.now().hour >= LATE_HOUR && !status.doneToday)
     }
 
     @Composable
@@ -90,8 +86,10 @@ class RenWidget : GlanceAppWidget() {
         val ink = ColorProvider(Color(0xFF111111), Color(0xFFF5F5F7))
         val ink2 = ColorProvider(Color(0xFF8E8E93), Color(0xFF8E8E93))
         val akane = ColorProvider(Color(0xFFE03E36), Color(0xFFFF453A))
+        val card = if (data.late) ColorProvider(Color(0xF7FFF1DC), Color(0xF72E2312)) else ColorProvider(Color(0xF7FFFFFF), Color(0xF71C1C1E))
+        val button = if (data.late) ColorProvider(Color(0xFFFF9500), Color(0xFFFF9F0A)) else akane
         Column(
-            GlanceModifier.fillMaxSize().cornerRadius(22.dp).background(ColorProvider(Color(0xF7FFFFFF), Color(0xF71C1C1E))).padding(16.dp),
+            GlanceModifier.fillMaxSize().cornerRadius(22.dp).background(card).padding(16.dp),
         ) {
             Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Box(GlanceModifier.size(60.dp), contentAlignment = Alignment.Center) {
@@ -106,7 +104,7 @@ class RenWidget : GlanceAppWidget() {
             }
             Spacer(GlanceModifier.height(12.dp))
             Box(
-                GlanceModifier.fillMaxWidth().height(42.dp).cornerRadius(12.dp).background(akane)
+                GlanceModifier.fillMaxWidth().height(42.dp).cornerRadius(12.dp).background(button)
                     .clickable(actionStartActivity(DeepLinks.sessionIntent(context, quick = true))),
                 contentAlignment = Alignment.Center,
             ) {

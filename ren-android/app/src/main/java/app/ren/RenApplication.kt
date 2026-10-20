@@ -28,6 +28,7 @@ class RenApplication : Application(), Configuration.Provider {
         super.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(audio)
         NotificationHelper.ensureChannel(this)
+        ReminderScheduler.scheduleWidgetTint(this)
         scope.launch {
             val p = preferences.current()
             if (p.onboarded) ReminderScheduler.schedule(this@RenApplication, p.reminderEnabled, p.reminderMinuteOfDay)
