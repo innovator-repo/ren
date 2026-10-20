@@ -61,6 +61,7 @@ import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.RenMotion
+import app.ren.designsystem.GeistMono
 import app.ren.designsystem.LocalHaptics
 import app.ren.core.mvi.CollectEffects
 import app.ren.domain.fsrs.Rating
@@ -136,7 +137,7 @@ private fun TopBar(state: SessionUiState, onIntent: (SessionIntent) -> Unit) {
             is SessionPage.Review -> {
                 ProgressBar(state.progress, c.akane, Modifier.weight(1f))
                 HSpace(12.dp)
-                Txt("${state.position} / ${state.total}", Ren.type.footnote.copy(fontWeight = FontWeight.SemiBold), color = c.ink2)
+                Txt("${state.position} / ${state.total}", Ren.type.footnote.copy(fontFamily = GeistMono, fontWeight = FontWeight.Medium), color = c.ink2)
             }
             else -> Box(Modifier.weight(1f))
         }
@@ -309,7 +310,7 @@ private fun SummaryPage(ui: SummaryUi, onIntent: (SessionIntent) -> Unit) {
 @Composable
 private fun Stat(value: String, label: String, modifier: Modifier) {
     Card(modifier, padding = androidx.compose.foundation.layout.PaddingValues(vertical = 14.dp, horizontal = 8.dp)) {
-        Txt(value, Ren.type.title2.copy(fontWeight = FontWeight.Bold), modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
+        Txt(value, Ren.type.title2.copy(fontFamily = GeistMono, fontWeight = FontWeight.Medium), modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
         Txt(label, Ren.type.caption, color = Ren.colors.ink2, modifier = Modifier.fillMaxWidth(), align = TextAlign.Center)
     }
 }

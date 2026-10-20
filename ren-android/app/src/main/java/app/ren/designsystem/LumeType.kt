@@ -32,3 +32,9 @@ val JaLocale = LocaleList("ja-JP")
 
 /** Phrase-level breaks honouring kinsoku rules, so words like コーヒー never split across lines. */
 val KinsokuLineBreak = LineBreak(LineBreak.Strategy.HighQuality, LineBreak.Strictness.Strict, LineBreak.WordBreak.Phrase)
+
+/** Precision voice: tabular numerals for counts, timers and scheduling numbers. */
+val GeistMono = FontFamily(
+    Font(R.font.geist_mono_regular, FontWeight.Normal),
+    Font(R.font.geist_mono_medium, FontWeight.Medium),
+)

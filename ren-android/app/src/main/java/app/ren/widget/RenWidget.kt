@@ -33,6 +33,7 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
+import androidx.glance.text.FontFamily
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -94,11 +95,11 @@ class RenWidget : GlanceAppWidget() {
             Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Box(GlanceModifier.size(60.dp), contentAlignment = Alignment.Center) {
                     Image(ImageProvider(ring), contentDescription = "Retention ${data.retention} percent", modifier = GlanceModifier.size(60.dp))
-                    Text("${data.retention}%", style = TextStyle(color = ink, fontSize = 14.sp, fontWeight = FontWeight.Bold))
+                    Text("${data.retention}%", style = TextStyle(color = ink, fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace))
                 }
                 Spacer(GlanceModifier.width(14.dp))
                 Column {
-                    Text(if (data.due > 0) "${data.due} due" else "All caught up", style = TextStyle(color = ink, fontSize = 22.sp, fontWeight = FontWeight.Bold))
+                    Text(if (data.due > 0) "${data.due} due" else "All caught up", style = TextStyle(color = ink, fontSize = 22.sp, fontWeight = FontWeight.Bold, fontFamily = if (data.due > 0) FontFamily.Monospace else null))
                     Text("🔥 ${data.streak}-day streak", style = TextStyle(color = ink2, fontSize = 13.sp))
                 }
             }
