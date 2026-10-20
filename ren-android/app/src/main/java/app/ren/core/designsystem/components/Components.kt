@@ -1,5 +1,6 @@
 package app.ren.core.designsystem.components
 
+import app.ren.designsystem.pressable
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
@@ -67,7 +68,7 @@ import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.RenMotion
 import app.ren.core.designsystem.theme.RenShapes
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 
 // ------------------------------------------------------------------ text
 
@@ -109,36 +110,6 @@ fun Txt(
 }
 
 // ------------------------------------------------------------------ touch
-
-/**
- * Spec §2 press feel, kept subtle: a 3% shrink and a slight dim on touch-down, springing back on release.
- */
-@Composable
-fun Modifier.pressable(
-    enabled: Boolean = true,
-    label: String? = null,
-    role: Role = Role.Button,
-    scaleDown: Float = RenMotion.PRESSED_SCALE,
-    haptic: Boolean = false,
-    onClick: () -> Unit,
-): Modifier {
-    val source = remember { MutableInteractionSource() }
-    val pressed by source.collectIsPressedAsState()
-    val p by animateFloatAsState(if (pressed && enabled) 1f else 0f, RenMotion.spring(), label = "press")
-    val haptics = LocalHaptics.current
-    return this
-        .graphicsLayer {
-            val s = 1f - (1f - scaleDown) * p
-            scaleX = s
-            scaleY = s
-            alpha = 1f - 0.15f * p
-        }
-        .then(if (label != null) Modifier.semantics { contentDescription = label } else Modifier)
-        .clickable(source, indication = null, enabled = enabled, role = role) {
-            if (haptic) haptics.tick()
-            onClick()
-        }
-}
 
 /** List-row highlight: a soft wash while the finger is down. */
 @Composable
@@ -321,43 +292,6 @@ fun Kicker(text: String, modifier: Modifier = Modifier, color: Color = Ren.color
 @Composable
 fun SectionFooter(text: String, modifier: Modifier = Modifier) {
     Txt(text, Ren.type.caption, color = Ren.colors.ink2, modifier = modifier.padding(horizontal = 4.dp, vertical = 8.dp))
-}
-
-/**
- * Rows separated by inset hairlines. By default they sit in a soft group; [plain] lays them
- * straight on the page, like Sigil's lists.
- */
-@Composable
-fun GroupedList(modifier: Modifier = Modifier, plain: Boolean = false, build: GroupedListBuilder.() -> Unit) {
-    val rows = GroupedListBuilder().apply(build).rows
-    Column(
-        modifier
-            .fillMaxWidth()
-            .then(if (plain) Modifier else Modifier.clip(RoundedCornerShape(RenShapes.card)).background(Ren.colors.group)),
-    ) {
-        rows.forEachIndexed { i, row ->
-            if (i > 0) Hairline(Modifier.padding(start = row.inset))
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .then(if (row.onClick != null) Modifier.rowHighlight(row.enabled, row.onClick) else Modifier)
-                    .heightIn(min = 48.dp)
-                    .padding(horizontal = if (plain) 4.dp else 14.dp, vertical = 9.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                content = row.content,
-            )
-        }
-    }
-}
-
-class GroupedListBuilder {
-    internal class RowSpec(val inset: Dp, val enabled: Boolean, val onClick: (() -> Unit)?, val content: @Composable RowScope.() -> Unit)
-
-    internal val rows = mutableListOf<RowSpec>()
-
-    fun row(inset: Dp = 14.dp, enabled: Boolean = true, onClick: (() -> Unit)? = null, content: @Composable RowScope.() -> Unit) {
-        rows += RowSpec(inset, enabled, onClick, content)
-    }
 }
 
 @Composable

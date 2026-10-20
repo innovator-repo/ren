@@ -48,7 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import app.ren.core.designsystem.theme.Ren
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import app.ren.domain.ink.GLYPH_BOX
 import app.ren.domain.ink.Pt
 import app.ren.domain.ink.StrokeMatcher
@@ -132,7 +132,7 @@ fun StrokePad(
                             state.accept()
                             scope.launch { snap.snapTo(0f); snap.animateTo(1f, tween(160)) }
                         } else {
-                            haptics.error()
+                            haptics.gentleNudge()
                             state.mistakes++
                             failed = live.toList()
                             scope.launch {

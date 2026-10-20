@@ -35,7 +35,7 @@ import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.Snapshot
 import app.cash.paparazzi.SnapshotHandler
 import app.ren.R
-import app.ren.core.designsystem.components.TabBarHeight
+import app.ren.designsystem.TabBarHeight
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.RenTheme

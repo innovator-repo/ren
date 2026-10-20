@@ -51,17 +51,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.ren.core.designsystem.components.BottomSheet
+import app.ren.designsystem.BottomSheet
 import app.ren.core.designsystem.components.Card
 import app.ren.core.designsystem.components.Chevron
 import app.ren.core.designsystem.components.CircleIconButton
 import app.ren.core.designsystem.components.CupertinoSwitch
 import app.ren.core.designsystem.components.GlyphTile
-import app.ren.core.designsystem.components.GroupedList
+import app.ren.designsystem.GroupedList
 import app.ren.core.designsystem.components.HSpace
-import app.ren.core.designsystem.components.LargeTitleScaffold
-import app.ren.core.designsystem.components.NavBar
-import app.ren.core.designsystem.components.NavBarHeight
+import app.ren.designsystem.LargeTitleScaffold
+import app.ren.designsystem.NavBar
+import app.ren.designsystem.NavBarHeight
 import app.ren.core.designsystem.components.PartChip
 import app.ren.core.designsystem.components.PrimaryButton
 import app.ren.core.designsystem.components.RubySentence
@@ -75,13 +75,13 @@ import app.ren.core.designsystem.components.ToolButton
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.VSpace
 import app.ren.core.designsystem.components.WordLook
-import app.ren.core.designsystem.components.glassSource
-import app.ren.core.designsystem.components.pressable
+import app.ren.designsystem.glassSource
+import app.ren.designsystem.pressable
 import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.jp
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import app.ren.core.mvi.CollectEffects
 import app.ren.domain.model.RubyMarkup
 import app.ren.domain.usecase.StoryInsight
@@ -185,7 +185,7 @@ fun StoryRoute(vm: StoryViewModel = hiltViewModel()) {
     CollectEffects(vm.effects) { e ->
         when (e) {
             is StoryEffect.Item -> nav.item(e.itemId)
-            StoryEffect.Saved -> haptics.success()
+            StoryEffect.Saved -> haptics.checkComplete()
         }
     }
     StoryScreen(state, nav::back, vm::onIntent)

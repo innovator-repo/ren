@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import app.ren.R
+import app.ren.designsystem.LumeMotion
 
 /**
  * Ren's palette: calm neutral pages (paper white, or graphite in dark) with soft grouped fills
@@ -186,11 +187,10 @@ fun TextStyle.jp(size: TextUnit, weight: FontWeight = FontWeight.Normal) =
     copy(fontSize = size, fontWeight = weight, lineHeight = size * 1.3f, letterSpacing = 0.sp)
 
 object RenMotion {
-    /** Spec §2: LowBouncy damping with MediumLow stiffness for sheets, flips and presses. */
-    fun <T> spring() = spring<T>(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow)
-    fun <T> snappy() = spring<T>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
-    fun <T> gentle() = spring<T>(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMediumLow)
-    const val PRESSED_SCALE = 0.97f
+    fun <T> spring() = LumeMotion.spatial<T>()
+    fun <T> snappy() = LumeMotion.effects<T>()
+    fun <T> gentle() = LumeMotion.effects<T>()
+    const val PRESSED_SCALE = LumeMotion.PRESSED_SCALE
 }
 
 object RenShapes {

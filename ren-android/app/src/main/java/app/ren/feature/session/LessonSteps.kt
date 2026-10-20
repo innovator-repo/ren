@@ -61,13 +61,13 @@ import app.ren.core.designsystem.components.StrokePad
 import app.ren.core.designsystem.components.Tag
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.VSpace
-import app.ren.core.designsystem.components.pressable
+import app.ren.designsystem.pressable
 import app.ren.core.designsystem.components.StrokePadState
 import app.ren.core.designsystem.components.rememberStrokePaths
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.jp
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import app.ren.domain.ink.Box as GlyphBox
 import app.ren.domain.ink.GLYPH_BOX
 import app.ren.domain.ink.StrokeMatcher
@@ -318,7 +318,7 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
                                     solved = true; haptics.click(); onReady()
                                     message = "Yes. $name is the ${step.targetName}."
                                 } else {
-                                    wrong = ci; haptics.error()
+                                    wrong = ci; haptics.gentleNudge()
                                     message = "That part is $name. Try another piece."
                                     scope.launch { shake.animateTo(0f, keyframes { durationMillis = 350; -10f at 60; 8f at 140; -4f at 220 }) }
                                 }
@@ -333,7 +333,7 @@ private fun FindStep(step: LessonStep.FindIt, key: Any, onReady: () -> Unit, onS
                             if (solved) return@HitBox
                             if (isTarget) { solved = true; haptics.click(); onReady(); message = "Yes, that is ${k?.character}." }
                             else {
-                                wrong = i + 100; haptics.error(); message = "Not that one. Listen again."
+                                wrong = i + 100; haptics.gentleNudge(); message = "Not that one. Listen again."
                                 scope.launch { shake.animateTo(0f, keyframes { durationMillis = 350; -10f at 60; 8f at 140; -4f at 220 }) }
                             }
                         }

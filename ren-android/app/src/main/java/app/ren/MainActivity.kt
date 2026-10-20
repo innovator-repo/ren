@@ -14,8 +14,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.ren.core.designsystem.theme.RenTheme
-import app.ren.core.haptics.LocalHaptics
-import app.ren.core.haptics.rememberHaptics
+import app.ren.designsystem.LocalHaptics
+import app.ren.designsystem.rememberHaptics
 import app.ren.domain.model.ThemeMode
 import app.ren.domain.model.UserPreferences
 import app.ren.domain.repository.PreferencesRepository

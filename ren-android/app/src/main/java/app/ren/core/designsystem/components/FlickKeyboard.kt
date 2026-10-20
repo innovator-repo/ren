@@ -1,5 +1,6 @@
 package app.ren.core.designsystem.components
 
+import app.ren.designsystem.pressable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -60,7 +61,7 @@ import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.jp
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import app.ren.domain.model.Japanese
 import kotlin.math.abs
 import kotlin.math.hypot

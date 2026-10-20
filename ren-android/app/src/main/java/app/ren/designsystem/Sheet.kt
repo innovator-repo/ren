@@ -1,4 +1,4 @@
-package app.ren.core.designsystem.components
+package app.ren.designsystem
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable

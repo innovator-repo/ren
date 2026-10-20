@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import app.ren.core.audio.StoryPlayback
-import app.ren.core.designsystem.components.TabBar
-import app.ren.core.designsystem.components.TabBarHeight
-import app.ren.core.designsystem.components.TabItem
+import app.ren.designsystem.TabBar
+import app.ren.designsystem.TabBarHeight
+import app.ren.designsystem.TabItem
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren

@@ -47,7 +47,7 @@ import app.ren.core.designsystem.components.TextAction
 import app.ren.core.designsystem.components.Txt
 import app.ren.core.designsystem.components.VSpace
 import app.ren.core.designsystem.components.WordLook
-import app.ren.core.designsystem.components.pressable
+import app.ren.designsystem.pressable
 import app.ren.core.designsystem.components.rememberStrokePadState
 import app.ren.core.designsystem.components.rememberStrokePaths
 import app.ren.core.designsystem.icons.RenIcon

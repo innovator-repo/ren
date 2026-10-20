@@ -34,10 +34,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.ren.core.designsystem.components.TabBar
-import app.ren.core.designsystem.components.TabBarHeight
-import app.ren.core.designsystem.components.TabItem
-import app.ren.core.designsystem.components.glassSource
+import app.ren.designsystem.TabBar
+import app.ren.designsystem.TabBarHeight
+import app.ren.designsystem.TabItem
+import app.ren.designsystem.glassSource
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.feature.detail.ItemDetailRoute

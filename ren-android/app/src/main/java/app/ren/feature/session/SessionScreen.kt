@@ -61,7 +61,7 @@ import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.core.designsystem.theme.RenMotion
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import app.ren.core.mvi.CollectEffects
 import app.ren.domain.fsrs.Rating
 import app.ren.navigation.LocalNavigator
@@ -73,8 +73,8 @@ fun SessionRoute(vm: SessionViewModel = hiltViewModel()) {
     val haptics = LocalHaptics.current
     CollectEffects(vm.effects) { e ->
         when (e) {
-            SessionEffect.PlayErrorHaptic -> haptics.error()
-            SessionEffect.PlaySuccessHaptic -> haptics.success()
+            SessionEffect.PlayErrorHaptic -> haptics.gentleNudge()
+            SessionEffect.PlaySuccessHaptic -> haptics.checkComplete()
             SessionEffect.Close -> nav.back()
             SessionEffect.Finished -> Unit
         }

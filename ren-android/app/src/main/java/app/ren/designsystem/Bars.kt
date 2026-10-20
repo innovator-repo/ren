@@ -1,5 +1,8 @@
-package app.ren.core.designsystem.components
+package app.ren.designsystem
 
+import app.ren.core.designsystem.components.Txt
+import app.ren.core.designsystem.components.VSpace
+import app.ren.core.designsystem.components.Hairline
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -39,7 +42,7 @@ import app.ren.core.designsystem.icons.RenIcon
 import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.LocalGlassEnabled
 import app.ren.core.designsystem.theme.Ren
-import app.ren.core.haptics.LocalHaptics
+import app.ren.designsystem.LocalHaptics
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint

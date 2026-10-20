@@ -21,10 +21,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.ren.core.designsystem.components.ActivityRings
 import app.ren.core.designsystem.components.Card
-import app.ren.core.designsystem.components.GroupedList
+import app.ren.designsystem.GroupedList
 import app.ren.core.designsystem.components.HSpace
 import app.ren.core.designsystem.components.Kicker
-import app.ren.core.designsystem.components.LargeTitleScaffold
+import app.ren.designsystem.LargeTitleScaffold
 import app.ren.core.designsystem.components.Pill
 import app.ren.core.designsystem.components.PrimaryButton
 import app.ren.core.designsystem.components.RingSpec
