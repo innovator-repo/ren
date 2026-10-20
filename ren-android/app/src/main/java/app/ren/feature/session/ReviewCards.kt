@@ -155,7 +155,7 @@ fun DrawPrompt(ui: ReviewUi, showRomaji: Boolean, onSpeak: () -> Unit, onFinishe
     }
     VSpace(14.dp)
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        StrokePad(p.strokes, pad, showGuide = false, lenient = true)
+        StrokePad(p.strokes, pad, showGuide = ui.assist, lenient = true)
     }
     VSpace(12.dp)
     Row(verticalAlignment = Alignment.CenterVertically) {

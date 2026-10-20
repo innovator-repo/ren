@@ -126,6 +126,10 @@ data class ReviewUi(
     val intervals: Map<Rating, String> = emptyMap(),
     val attempt: Int = 0,
     val shake: Int = 0,
+    /** Radical Azure nudge after a typed miss; the full answer on the closing retry. */
+    val hint: String? = null,
+    /** The closing retry of a round that ended on a miss: the answer is shown, success is guaranteed. */
+    val assist: Boolean = false,
 )
 
 data class LessonUi(
@@ -160,6 +164,8 @@ data class SessionUiState(
     val page: SessionPage = SessionPage.Loading,
     val position: Int = 0,
     val total: Int = 0,
+    /** 0..1, only ever grows: wrong answers still move it forward. */
+    val progress: Float = 0f,
     val showRomaji: Boolean = false,
     val library: ContentLibrary = ContentLibrary.Empty,
 )
@@ -180,7 +186,7 @@ sealed interface SessionIntent {
 }
 
 sealed interface SessionEffect {
-    data object PlayErrorHaptic : SessionEffect
+    data object PlayNudgeHaptic : SessionEffect
     data object PlaySuccessHaptic : SessionEffect
     data object Finished : SessionEffect
     data object Close : SessionEffect

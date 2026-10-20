@@ -73,7 +73,7 @@ fun SessionRoute(vm: SessionViewModel = hiltViewModel()) {
     val haptics = LocalHaptics.current
     CollectEffects(vm.effects) { e ->
         when (e) {
-            SessionEffect.PlayErrorHaptic -> haptics.gentleNudge()
+            SessionEffect.PlayNudgeHaptic -> haptics.gentleNudge()
             SessionEffect.PlaySuccessHaptic -> haptics.checkComplete()
             SessionEffect.Close -> nav.back()
             SessionEffect.Finished -> Unit
@@ -134,7 +134,7 @@ private fun TopBar(state: SessionUiState, onIntent: (SessionIntent) -> Unit) {
                 HSpace(48.dp)
             }
             is SessionPage.Review -> {
-                ProgressBar((state.position - 1f).coerceAtLeast(0f) / state.total.coerceAtLeast(1), c.akane, Modifier.weight(1f))
+                ProgressBar(state.progress, c.akane, Modifier.weight(1f))
                 HSpace(12.dp)
                 Txt("${state.position} / ${state.total}", Ren.type.footnote.copy(fontWeight = FontWeight.SemiBold), color = c.ink2)
             }
@@ -204,9 +204,12 @@ private fun ReviewPage(ui: ReviewUi, state: SessionUiState, onIntent: (SessionIn
                 )
                 Row(Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Txt(
-                        if (ui.attempt > 0) "Not quite. Check small kana and long vowels, then try once more."
-                        else "Flick a key in any direction to pick a kana.",
-                        Ren.type.footnote, color = if (ui.attempt > 0) c.amber else c.ink2, modifier = Modifier.weight(1f),
+                        when {
+                            ui.hint != null -> ui.hint
+                            ui.attempt > 0 -> "Almost. Check small kana and long vowels, then try once more."
+                            else -> "Flick a key in any direction to pick a kana."
+                        },
+                        Ren.type.footnote, color = if (ui.hint != null || ui.attempt > 0) c.radical else c.ink2, modifier = Modifier.weight(1f),
                     )
                     if (p.kind == ReviewKind.LISTEN) TextAction("Reveal", bold = true, color = c.radical) { onIntent(SessionIntent.Reveal(input.text)) }
                 }

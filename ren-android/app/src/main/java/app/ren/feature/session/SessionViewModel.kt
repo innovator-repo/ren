@@ -66,6 +66,8 @@ class SessionViewModel @Inject constructor(
     private var studyMs = 0L
     private val learned = mutableListOf<String>()
     private var lastLesson: LessonUnit? = null
+    private val safe = SafeFailure()
+    private var rescueId: String? = null
 
     init {
         viewModelScope.launch {
@@ -92,7 +94,14 @@ class SessionViewModel @Inject constructor(
     private fun advance() {
         viewModelScope.launch {
             while (true) {
-                val step = queue.removeFirstOrNull() ?: return@launch finish()
+                val step = queue.removeFirstOrNull()
+                    ?: safe.rescue()?.let { id ->
+                        // The round ended on a miss: one more look, answer in hand, so it closes on a success.
+                        rescueId = id
+                        total++
+                        SessionStep.Review(id)
+                    }
+                    ?: return@launch finish()
                 position++
                 when (step) {
                     is SessionStep.Review -> {
@@ -101,7 +110,11 @@ class SessionViewModel @Inject constructor(
                         val now = clock.now()
                         val intervals = FSRSScheduler.preview(card.fsrs, now).mapValues { formatInterval(now, it.value.due) }
                         shownAt = now
-                        setState { copy(page = SessionPage.Review(ReviewUi(prompt, intervals = intervals)), position = position, total = total) }
+                        val assist = rescueId == step.itemId
+                        rescueId = null
+                        val ui = ReviewUi(prompt, intervals = intervals, assist = assist, hint = if (assist) answerHint(prompt) else null)
+                        val progress = safe.advanceTo((position - 1f) / total.coerceAtLeast(1))
+                        setState { copy(page = SessionPage.Review(ui), position = position, total = total, progress = progress) }
                         if (prompt.kind == ReviewKind.DRAW_KANA || prompt.kind == ReviewKind.LISTEN) speak(prompt)
                         return@launch
                     }
@@ -119,6 +132,13 @@ class SessionViewModel @Inject constructor(
             }
         }
     }
+
+    /** Typed prompts only: the answer the learner is being walked towards. */
+    private fun answerHint(p: ReviewPrompt): String? =
+        p.answers.firstOrNull()?.takeIf { p.kind in TYPED_KINDS }?.let { "The answer is $it. Type it to finish." }
+
+    /** A miss still moves the bar: the attempt counts for part of the card. */
+    private fun creditAttempt(part: Float): Float = safe.advanceTo((position - 1f + part) / total.coerceAtLeast(1))
 
     private fun isReadyByDefault(step: LessonStep) = step !is LessonStep.WriteIt && step !is LessonStep.FindIt
 
@@ -193,14 +213,17 @@ class SessionViewModel @Inject constructor(
                 setState { copy(page = SessionPage.Review(ui.copy(phase = ReviewPhase.Result(true, text, suggested)))) }
             }
             ui.attempt == 0 && text.isNotBlank() -> {
-                // One more try: the amber ring and a nudge, like the prototype.
-                emit(SessionEffect.PlayErrorHaptic)
-                setState { copy(page = SessionPage.Review(ui.copy(attempt = 1, shake = ui.shake + 1))) }
+                // One more try: a nudge and an azure hint, never a stall.
+                emit(SessionEffect.PlayNudgeHaptic)
+                val hint = ui.prompt.answers.firstOrNull()?.let { "Hint: it starts with ${it.first()}" }
+                val progress = creditAttempt(0.4f)
+                setState { copy(page = SessionPage.Review(ui.copy(attempt = 1, shake = ui.shake + 1, hint = hint)), progress = progress) }
             }
             else -> {
                 audio.sfx(Sfx.Wrong)
-                emit(SessionEffect.PlayErrorHaptic)
-                setState { copy(page = SessionPage.Review(ui.copy(phase = ReviewPhase.Result(false, text, Rating.Again)))) }
+                emit(SessionEffect.PlayNudgeHaptic)
+                val progress = creditAttempt(0.7f)
+                setState { copy(page = SessionPage.Review(ui.copy(phase = ReviewPhase.Result(false, text, Rating.Again))), progress = progress) }
             }
         }
         speak(ui.prompt)
@@ -214,8 +237,9 @@ class SessionViewModel @Inject constructor(
             else -> Rating.Hard
         }
         audio.sfx(if (passed) Sfx.Correct else Sfx.Wrong)
-        emit(if (passed) SessionEffect.PlaySuccessHaptic else SessionEffect.PlayErrorHaptic)
-        setState { copy(page = SessionPage.Review(ui.copy(phase = ReviewPhase.Result(passed, null, suggested)))) }
+        emit(if (passed) SessionEffect.PlaySuccessHaptic else SessionEffect.PlayNudgeHaptic)
+        val progress = creditAttempt(if (passed) 0.9f else 0.7f)
+        setState { copy(page = SessionPage.Review(ui.copy(phase = ReviewPhase.Result(passed, null, suggested))), progress = progress) }
         speak(ui.prompt)
     }
 
@@ -226,13 +250,15 @@ class SessionViewModel @Inject constructor(
         val elapsed = (now - shownAt).coerceIn(0, 5 * 60_000L)
         studyMs += elapsed
         reviewed++
-        if (rating != Rating.Again) correct++
+        val recalled = rating != Rating.Again
+        if (recalled) correct++
+        safe.record(card.itemId, recalled)
         viewModelScope.launch {
             study.recordReview(card, updated, rating, elapsed, now)
-            // Learning steps come back within the same sitting.
-            if ((updated.state == CardState.Learning || updated.state == CardState.Relearning) &&
+            // A miss, and learning steps, come back at the end of the round.
+            val learningSoon = (updated.state == CardState.Learning || updated.state == CardState.Relearning) &&
                 updated.due - now <= 20 * FSRSScheduler.MINUTE_MS
-            ) {
+            if ((!recalled || learningSoon) && safe.requeue(card.itemId)) {
                 queue.addLast(SessionStep.Review(card.itemId))
                 total++
             }
@@ -297,5 +323,9 @@ class SessionViewModel @Inject constructor(
     override fun onCleared() {
         flushStudyTime()
         super.onCleared()
+    }
+
+    private companion object {
+        val TYPED_KINDS = setOf(ReviewKind.TYPE_READING, ReviewKind.TYPE_WORD, ReviewKind.TYPE_PAIR, ReviewKind.LISTEN)
     }
 }

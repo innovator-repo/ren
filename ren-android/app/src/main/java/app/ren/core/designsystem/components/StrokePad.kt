@@ -99,6 +99,8 @@ fun StrokePad(
     val live = remember { mutableStateListOf<Offset>() }
     var failed by remember { mutableStateOf<List<Offset>>(emptyList()) }
     val failAlpha = remember { Animatable(0f) }
+    // Safe failure: after a miss the correct stroke glows in Radical Azure, then fades.
+    val reveal = remember { Animatable(0f) }
     val shake = remember { Animatable(0f) }
     val snap = remember { Animatable(1f) }
     val callback by rememberUpdatedState(onStroke)
@@ -140,6 +142,10 @@ fun StrokePad(
                                 failAlpha.animateTo(0f, tween(650))
                             }
                             scope.launch {
+                                reveal.snapTo(1f)
+                                reveal.animateTo(0f, tween(1600))
+                            }
+                            scope.launch {
                                 shake.animateTo(0f, keyframes {
                                     durationMillis = 350
                                     -14f at 50; 12f at 110; -8f at 170; 5f at 230; 0f at 350
@@ -166,12 +172,14 @@ fun StrokePad(
                             val justDone = i == state.completed - 1
                             drawInk(p, c.ink.copy(alpha = if (justDone) 0.4f + 0.6f * snap.value else 1f), INK_WIDTH)
                         }
-                        showGuide || (state.hintShown && i == state.completed) ->
-                            drawInk(p, c.ink3.copy(alpha = 0.7f), 6f)
+                        state.hintShown && i == state.completed -> drawInk(p, c.radical.copy(alpha = 0.7f), 6f)
+                        i == state.completed && reveal.value > 0f && !state.done ->
+                            drawInk(p, c.radical.copy(alpha = 0.8f * reveal.value), 6f)
+                        showGuide -> drawInk(p, c.ink3.copy(alpha = 0.7f), 6f)
                     }
                 }
             }
-            if (failed.isNotEmpty() && failAlpha.value > 0f) drawPath(smooth(failed), c.akane.copy(alpha = failAlpha.value), style = Stroke(INK_WIDTH * k, cap = StrokeCap.Round))
+            if (failed.isNotEmpty() && failAlpha.value > 0f) drawPath(smooth(failed), c.amber.copy(alpha = failAlpha.value), style = Stroke(INK_WIDTH * k, cap = StrokeCap.Round))
             if (live.size > 1) drawPath(smooth(live), c.akane, style = Stroke(INK_WIDTH * k, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
             // Start dot for the next stroke: follow the red dot.
