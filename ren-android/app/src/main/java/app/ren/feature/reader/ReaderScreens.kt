@@ -214,6 +214,7 @@ fun StoryScreen(state: StoryUiState, onBack: () -> Unit, onIntent: (StoryIntent)
                 )
             }
             itemsIndexed(state.sentences, key = { _, s -> "s${s.index}" }) { _, s ->
+ androidx.compose.foundation.layout.Box(androidx.compose.ui.Modifier.animateItem()) {
                 val active = state.playback.playing && state.playback.sentence == s.index
                 val glow by animateFloatAsState(if (active) 1f else 0f, label = "active")
                 Column(
@@ -247,6 +248,7 @@ fun StoryScreen(state: StoryUiState, onBack: () -> Unit, onIntent: (StoryIntent)
                     Txt(s.en, Ren.type.footnote, color = c.ink2)
                 }
             }
+}
         }
         NavBar(
             RubyMarkup.plain(story.title), backLabel = "Library", onBack = onBack, haze = haze,
