@@ -422,7 +422,7 @@ fun SegmentedControl(options: List<String>, selected: Int, modifier: Modifier = 
 fun CupertinoSwitch(checked: Boolean, modifier: Modifier = Modifier, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
     val c = Ren.colors
     val haptics = LocalHaptics.current
-    val track by animateColorAsState(if (checked) c.bamboo else c.fill, tween(180), label = "track")
+    val track by animateColorAsState(if (checked) c.bamboo else c.fill, app.ren.designsystem.LumeMotion.effects(), label = "track")
     val x by animateDpAsState(if (checked) 20.dp else 2.dp, RenMotion.spring(), label = "thumb")
     Box(
         modifier
@@ -478,7 +478,7 @@ fun StepDashes(count: Int, current: Int, modifier: Modifier = Modifier) {
     val c = Ren.colors
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         repeat(count) { i ->
-            val color by animateColorAsState(if (i <= current) c.akane else c.fill, tween(260), label = "dash")
+            val color by animateColorAsState(if (i <= current) c.akane else c.fill, app.ren.designsystem.LumeMotion.effects(), label = "dash")
             Box(Modifier.size(width = 22.dp, height = 3.dp).clip(RoundedCornerShape(50)).background(color))
         }
     }

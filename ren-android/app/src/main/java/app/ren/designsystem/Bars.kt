@@ -105,8 +105,8 @@ fun LargeTitleScaffold(
     val scrolled by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 4 }
     }
-    val barAlpha by animateFloatAsState(if (scrolled) 1f else 0f, tween(180), label = "bar")
-    val titleAlpha by animateFloatAsState(if (titleGone) 1f else 0f, tween(180), label = "title")
+    val barAlpha by animateFloatAsState(if (scrolled) 1f else 0f, app.ren.designsystem.LumeMotion.effects(), label = "bar")
+    val titleAlpha by animateFloatAsState(if (titleGone) 1f else 0f, app.ren.designsystem.LumeMotion.effects(), label = "title")
 
     Box(modifier.fillMaxSize().background(c.canvas)) {
         LazyColumn(
@@ -188,7 +188,7 @@ fun TabBar(items: List<TabItem>, selected: Int, haze: HazeState?, modifier: Modi
         ) {
             items.forEachIndexed { i, item ->
                 val active = i == selected
-                val tint by animateColorAsState(if (active) c.akane else c.ink2, tween(160), label = "tab")
+                val tint by animateColorAsState(if (active) c.akane else c.ink2, app.ren.designsystem.LumeMotion.effects(), label = "tab")
                 Column(
                     Modifier
                         .weight(1f)
