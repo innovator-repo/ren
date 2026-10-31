@@ -40,6 +40,7 @@ import androidx.glance.text.TextStyle
 import app.ren.R
 import app.ren.data.local.StudyDao
 import app.ren.ecosystem.RenStatus
+import app.ren.domain.repository.ContentRepository
 import app.ren.domain.repository.PreferencesRepository
 import app.ren.work.DeepLinks
 import dagger.hilt.EntryPoint
@@ -59,6 +60,7 @@ import java.time.LocalTime
 interface WidgetEntryPoint {
     fun studyDao(): StudyDao
     fun preferences(): PreferencesRepository
+    fun content(): ContentRepository
 }
 
 /** [late]: past 21:00 with today's session still undone, so the card turns amber. */
@@ -86,7 +88,7 @@ class RenWidget : GlanceAppWidget() {
     private fun Content(data: WidgetData, ring: Bitmap, context: Context) {
         val ink = ColorProvider(Color(0xFF111111), Color(0xFFF5F5F7))
         val ink2 = ColorProvider(Color(0xFF8E8E93), Color(0xFF8E8E93))
-        val akane = ColorProvider(Color(0xFFE03E36), Color(0xFFFF453A))
+        val akane = ColorProvider(Color(0xFFBB443A), Color(0xFFF18477))
         val card = if (data.late) ColorProvider(Color(0xF7FFF1DC), Color(0xF72E2312)) else ColorProvider(Color(0xF7FFFFFF), Color(0xF71C1C1E))
         val button = if (data.late) ColorProvider(Color(0xFFFF9500), Color(0xFFFF9F0A)) else akane
         Column(
@@ -139,6 +141,11 @@ class RenWidgetReceiver : GlanceAppWidgetReceiver() {
 object WidgetUpdater {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     fun refresh(context: Context) {
-        scope.launch { runCatching { RenWidget().updateAll(context.applicationContext) } }
+        val app = context.applicationContext
+        scope.launch {
+            runCatching { RenWidget().updateAll(app) }
+            runCatching { RenDueWidget().updateAll(app) }
+            runCatching { RenWordWidget().updateAll(app) }
+        }
     }
 }

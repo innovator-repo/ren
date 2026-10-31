@@ -5,4 +5,8 @@
     <string name="widget_description">Due reviews, retention and your streak.</string>
     <string name="channel_reminders">Daily reminder</string>
     <string name="channel_reminders_desc">One gentle nudge a day when reviews are waiting.</string>
+    <string name="widget_due_label">Ren: due and start</string>
+    <string name="widget_due_description">Cards due today and a Start session button.</string>
+    <string name="widget_word_label">Ren: word of the day</string>
+    <string name="widget_word_description">A Japanese word a day. Tap for the reading and meaning, tap again to go back.</string>
 </resources>

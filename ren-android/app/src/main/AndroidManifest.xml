@@ -68,6 +68,30 @@
         </receiver>
 
         <receiver
+            android:name=".widget.RenDueWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_due_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ren_due_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.RenWordWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_word_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ren_word_widget_info" />
+        </receiver>
+
+        <receiver
             android:name=".ecosystem.FloorModeReceiver"
             android:exported="true"
             android:permission="app.lume.permission.ECOSYSTEM_SYNC">

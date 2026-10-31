@@ -10,10 +10,11 @@ import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Read-only `content://app.ren.japanese.provider/status`: one row with due, retention (0-100),
- * streak and doneToday (0/1). Guarded by the ecosystem signature permission in the manifest.
+ * streak, doneToday (0/1), newToday and minutes (estimate). Guarded by the ecosystem signature permission in the manifest.
  */
 class RenStatusProvider : ContentProvider() {
     override fun onCreate() = true
@@ -24,16 +25,19 @@ class RenStatusProvider : ContentProvider() {
         val status = runCatching {
             val entry = EntryPointAccessors.fromApplication(context.applicationContext, WidgetEntryPoint::class.java)
             runBlocking {
+                val day = LocalDate.now()
                 RenStatus.compute(
                     entry.studyDao().observeCards().first(),
                     entry.preferences().current(),
                     System.currentTimeMillis(),
-                    LocalDate.now().toEpochDay(),
+                    day.toEpochDay(),
+                    units = entry.studyDao().observeUnits().first(),
+                    dayStart = day.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 )
             }
         }.getOrNull() ?: RenStatus(0, 100, 0, false)
-        return MatrixCursor(COLUMNS, 1).apply {
-            addRow(arrayOf<Any>(status.due, status.retention, status.streak, if (status.doneToday) 1 else 0))
+        return MatrixCursor(RenStatus.COLUMNS, 1).apply {
+            addRow(status.toRow())
         }
     }
 
@@ -41,8 +45,4 @@ class RenStatusProvider : ContentProvider() {
     override fun insert(uri: Uri, values: ContentValues?): Uri? = null
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?) = 0
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?) = 0
-
-    private companion object {
-        val COLUMNS = arrayOf("due", "retention", "streak", "doneToday")
-    }
 }

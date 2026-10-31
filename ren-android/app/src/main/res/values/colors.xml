@@ -2,7 +2,7 @@
 <resources>
     <color name="canvas">#FFFFFFFF</color>
     <color name="surface">#FFFFFFFF</color>
-    <color name="akane">#FFE03E36</color>
+    <color name="akane">#FFBB443A</color>
     <color name="ink">#FF111111</color>
     <color name="ink2">#FF8E8E93</color>
     <color name="bamboo">#FF34C759</color>

@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object OnboardingRoute
 @Serializable data class MainRoute(val tab: Int = 0)
+@Serializable data object PathPageRoute
+@Serializable data object ReaderPageRoute
+@Serializable data object ProgressPageRoute
 @Serializable data class SessionRoute(val quick: Boolean = false)
 @Serializable data class LessonRoute(val unitId: String)
 @Serializable data class StoryRoute(val storyId: String)
@@ -20,7 +23,9 @@ interface Navigator {
     fun item(itemId: String)
     fun stage(index: Int)
     fun settings()
-    fun tab(index: Int)
+    fun path()
+    fun reader()
+    fun progress()
     fun back()
 }
 
@@ -31,15 +36,10 @@ object NoNavigator : Navigator {
     override fun item(itemId: String) = Unit
     override fun stage(index: Int) = Unit
     override fun settings() = Unit
-    override fun tab(index: Int) = Unit
+    override fun path() = Unit
+    override fun reader() = Unit
+    override fun progress() = Unit
     override fun back() = Unit
 }
 
 val LocalNavigator = staticCompositionLocalOf<Navigator> { NoNavigator }
-
-object Tabs {
-    const val TODAY = 0
-    const val PATH = 1
-    const val MATRIX = 2
-    const val READER = 3
-}

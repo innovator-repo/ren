@@ -1,7 +1,5 @@
 package app.ren.navigation
 
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
@@ -13,32 +11,22 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
+import app.ren.designsystem.LocalBack
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.ren.designsystem.TabBar
-import app.ren.designsystem.TabBarHeight
-import app.ren.designsystem.TabItem
-import app.ren.designsystem.glassSource
-import app.ren.core.designsystem.icons.RenIcons
 import app.ren.core.designsystem.theme.Ren
 import app.ren.feature.detail.ItemDetailRoute
 import app.ren.feature.matrix.MatrixRoute
@@ -50,7 +38,6 @@ import app.ren.feature.reader.StoryRoute as StoryScreenRoute
 import app.ren.feature.session.SessionRoute as SessionScreenRoute
 import app.ren.feature.settings.SettingsRoute as SettingsScreenRoute
 import app.ren.feature.today.TodayRoute
-import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.flow.Flow
 
 /** iOS-like navigation curve: quick start, long soft settle. */
@@ -67,8 +54,7 @@ private val MODAL = listOf(
 @Composable
 fun RenApp(onboarded: Boolean, deepLinks: Flow<Boolean>) {
     val nav = rememberNavController()
-    var tab by rememberSaveable { mutableIntStateOf(Tabs.TODAY) }
-    val navigator = remember(nav) { NavNavigator(nav) { tab = it } }
+    val navigator = remember(nav) { NavNavigator(nav) }
     // Fixed at launch: finishing onboarding navigates on its own, so the graph is never rebuilt.
     val start: Any = remember { if (onboarded) MainRoute() else OnboardingRoute }
 
@@ -104,8 +90,11 @@ fun RenApp(onboarded: Boolean, deepLinks: Flow<Boolean>) {
                 })
             }
             composable<MainRoute>(enterTransition = { fadeIn(tween(300)) }, popExitTransition = { ExitTransition.None }) {
-                MainScreen(tab) { tab = it }
+                TodayRoute()
             }
+            composable<PathPageRoute> { Pushed(nav) { PathRoute(it) } }
+            composable<ReaderPageRoute> { Pushed(nav) { ReaderRoute(it) } }
+            composable<ProgressPageRoute> { Pushed(nav) { MatrixRoute(it) } }
             composable<SessionRoute> { SessionScreenRoute() }
             composable<LessonRoute> { SessionScreenRoute() }
             composable<StoryRoute> { StoryScreenRoute() }
@@ -116,52 +105,24 @@ fun RenApp(onboarded: Boolean, deepLinks: Flow<Boolean>) {
     }
 }
 
-private class NavNavigator(private val nav: NavHostController, private val setTab: (Int) -> Unit) : Navigator {
+/** A shortcut screen reached from the main screen: its title row gets a "‹ Ren" back button. */
+@Composable
+private fun Pushed(nav: NavHostController, content: @Composable (Dp) -> Unit) {
+    val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    CompositionLocalProvider(LocalBack provides { nav.popBackStack() }) { content(inset) }
+}
+
+private class NavNavigator(private val nav: NavHostController) : Navigator {
     override fun session(quick: Boolean) = nav.navigate(SessionRoute(quick)) { launchSingleTop = true }
     override fun lesson(unitId: String) = nav.navigate(LessonRoute(unitId)) { launchSingleTop = true }
     override fun story(storyId: String) = nav.navigate(StoryRoute(storyId))
     override fun item(itemId: String) = nav.navigate(ItemRoute(itemId))
     override fun stage(index: Int) = nav.navigate(StageRoute(index))
     override fun settings() = nav.navigate(SettingsRoute) { launchSingleTop = true }
-    override fun tab(index: Int) {
-        setTab(index)
-        nav.popBackStack<MainRoute>(inclusive = false)
-    }
+    override fun path() = nav.navigate(PathPageRoute) { launchSingleTop = true }
+    override fun reader() = nav.navigate(ReaderPageRoute) { launchSingleTop = true }
+    override fun progress() = nav.navigate(ProgressPageRoute) { launchSingleTop = true }
     override fun back() {
         nav.popBackStack()
-    }
-}
-
-/** The four tabs (spec §5) over one frosted tab bar. Each tab keeps its own scroll position. */
-@Composable
-fun MainScreen(tab: Int, onTab: (Int) -> Unit) {
-    val haze = remember { HazeState() }
-    val holder = rememberSaveableStateHolder()
-    val bottomInset = TabBarHeight + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    val items = listOf(
-        TabItem("Today", RenIcons.Today),
-        TabItem("Path", RenIcons.Path),
-        TabItem("Matrix", RenIcons.Matrix),
-        TabItem("Reader", RenIcons.Reader),
-    )
-    Box(Modifier.fillMaxSize().background(Ren.colors.canvas)) {
-        Box(Modifier.fillMaxSize().glassSource(haze)) {
-            // A quick crossfade, so switching tabs never flashes a blank frame.
-            AnimatedContent(
-                targetState = tab,
-                transitionSpec = { fadeIn(tween(160, delayMillis = 40)) togetherWith fadeOut(tween(90)) },
-                label = "tab",
-            ) { shown ->
-                holder.SaveableStateProvider(shown) {
-                    when (shown) {
-                        Tabs.TODAY -> TodayRoute(bottomInset)
-                        Tabs.PATH -> PathRoute(bottomInset)
-                        Tabs.MATRIX -> MatrixRoute(bottomInset)
-                        else -> ReaderRoute(bottomInset)
-                    }
-                }
-            }
-        }
-        TabBar(items, tab, haze, Modifier.align(Alignment.BottomCenter), onSelect = onTab)
     }
 }

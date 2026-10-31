@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -78,6 +79,9 @@ fun Modifier.glassSource(state: HazeState): Modifier = if (LocalGlassEnabled.cur
 val NavBarHeight = 44.dp
 val TabBarHeight = 50.dp
 
+/** Set by the pushed shortcut screens (Path, Reader, Progress) so their title row shows "‹ Ren". */
+val LocalBack = androidx.compose.runtime.staticCompositionLocalOf<(() -> Unit)?> { null }
+
 /**
  * iOS large-title screen: the big title scrolls with content; once it passes under the bar,
  * a frosted bar fades in with a small centred title.
@@ -93,6 +97,7 @@ fun LargeTitleScaffold(
     content: LazyListScope.() -> Unit,
 ) {
     val c = Ren.colors
+    val back = LocalBack.current
     val haze = remember { HazeState() }
     val top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val density = LocalDensity.current
@@ -116,7 +121,16 @@ fun LargeTitleScaffold(
         ) {
             item(key = "large-title") {
                 Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp)) {
-                    Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+                        if (back != null) {
+                            Row(
+                                Modifier.heightIn(min = 48.dp).pressable(label = "Back", scaleDown = 0.94f, onClick = back).padding(end = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                RenIcon(RenIcons.Back, c.akane, size = 20.dp)
+                                Txt("Ren", Ren.type.body.copy(fontSize = 16.sp), color = c.akane, maxLines = 1)
+                            }
+                        }
                         Txt(subtitle.orEmpty(), Ren.type.footnote, color = c.ink2, modifier = Modifier.weight(1f), maxLines = 1)
                         trailing?.invoke()
                     }
